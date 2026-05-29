@@ -82,14 +82,20 @@ def stream_logs():
     """
     Cria uma conexão Server-Sent Events (SSE) em tempo real que:
     1. Executa o scraper.py local em um subprocesso de terminal Python.
-    2. Lê a saída do terminal (stdout) linha a linha e a envia de volta ao painel web.
-    3. Finaliza enviando marcadores especiais de término ou erro.
+    2. Lê a saída do terminal de forma assíncrona (Thread + Queue) não bloqueante.
+    3. Envia comentários keep-alive periódicos para evitar queda de timeout do navegador.
+    4. Finaliza enviando marcadores especiais de término ou erro.
     """
+    import queue
+    from threading import Thread
+    
+    def enqueue_output(out, q):
+        for line in iter(out.readline, ''):
+            q.put(line)
+        out.close()
+
     def generate_log_lines():
-        # sys.executable garante o uso do mesmo interpretador python ativo
-        # a flag -u ativa o modo de output sem buffer para obtermos os prints em tempo real
         scraper_path = os.path.join(BASE_DIR, "scraper.py")
-        
         print(f"[SERVIDOR] Disparando subprocesso python -u {scraper_path}")
         
         try:
@@ -102,14 +108,31 @@ def stream_logs():
                 cwd=BASE_DIR
             )
             
-            # Lê linha por linha do terminal à medida em que são escritas
-            for line in iter(process.stdout.readline, ''):
-                if line:
-                    yield f"data: {line.strip()}\n\n"
-                    
-            process.stdout.close()
-            return_code = process.wait()
+            # Cria a fila e inicia a Thread de leitura do terminal do scraper
+            q = queue.Queue()
+            t = Thread(target=enqueue_output, args=(process.stdout, q))
+            t.daemon = True  # Permite encerramento automático com o processo principal
+            t.start()
             
+            # Loop de leitura resiliente a timeouts de inatividade
+            while True:
+                try:
+                    # Tenta obter uma linha de log com timeout de 2 segundos
+                    line = q.get(timeout=2)
+                    yield f"data: {line.strip()}\n\n"
+                except queue.Empty:
+                    # Se a fila está vazia, verifica se o processo terminou
+                    if process.poll() is not None:
+                        # O processo encerrou. Esvazia as linhas finais pendentes na fila
+                        while not q.empty():
+                            line = q.get_nowait()
+                            yield f"data: {line.strip()}\n\n"
+                        break
+                    # Envia um comentário keep-alive no formato do protocolo SSE (ignorado pela UI)
+                    # Isso avisa o navegador que a conexão TCP continua 100% ativa
+                    yield ": keep-alive\n\n"
+            
+            return_code = process.wait()
             if return_code == 0:
                 print("[SERVIDOR] Processo concluído com código de sucesso 0")
                 yield "data: __FINISHED__\n\n"

@@ -50,6 +50,14 @@ def get_instagram_session():
         save_metadata=False
     )
     
+    # User-Agents correspondentes a cada navegador para que o Instagram não desconfie da assinatura HTTP
+    user_agents = {
+        'chrome': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+        'edge': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36 Edg/125.0.0.0',
+        'firefox': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:126.0) Gecko/20100101 Firefox/126.0',
+        'opera': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36 OPR/111.0.0.0'
+    }
+    
     print("[INFO] Tentando extrair cookies do Instagram dos navegadores locais...")
     browsers = ['chrome', 'edge', 'firefox', 'opera']
     cookies_loaded = False
@@ -69,22 +77,32 @@ def get_instagram_session():
             # Atualiza os cookies da sessão de requests interna do Instaloader
             L.context._session.cookies.update(cookies)
             
-            # Testa se a sessão está funcional tentando buscar um perfil público simples
-            # (ou checando se os cookies contêm a chave 'sessionid' que indica login ativo)
-            cookies_dict = requests.utils.dict_from_cookiejar(cookies)
-            if 'sessionid' in cookies_dict:
-                print(f"[SUCESSO] Sessão ativa do Instagram importada com sucesso do {browser.capitalize()}!")
+            # Define o User-Agent correspondente ao navegador de origem
+            ua = user_agents.get(browser, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36')
+            L.context._session.headers.update({'User-Agent': ua})
+            
+            # Testa se a sessão está funcional de verdade usando L.test_login()
+            print(f"[INFO] Validando sessão ativa no Instagram obtida do {browser.capitalize()}...")
+            logged_username = L.test_login()
+            
+            if logged_username:
+                print(f"[SUCESSO] Sessão ativa do Instagram (@{logged_username}) importada com sucesso do {browser.capitalize()}!")
                 cookies_loaded = True
                 break
             else:
-                print(f"[AVISO] Cookies obtidos do {browser.capitalize()}, mas parecem não conter sessão logada.")
+                print(f"[AVISO] Cookies obtidos do {browser.capitalize()}, mas a sessão de login não está ativa/válida.")
+                L.context._session.cookies.clear() # Limpa cookies para evitar erros de requisições malformadas
         except Exception as e:
             print(f"[AVISO] Não foi possível ler cookies do navegador {browser.capitalize()}: {e}")
             continue
             
     if not cookies_loaded:
-        print("[AVISO] Nenhum cookie de sessão logada foi encontrado. O robô rodará de forma anônima.")
-        print("[DICA] Certifique-se de estar logado no Instagram no seu navegador Chrome, Edge ou Firefox!")
+        print("[AVISO] Nenhuma sessão logada ativa foi encontrada. O robô rodará de forma anônima.")
+        print("[DICA] Certifique-se de estar logado no Instagram no seu navegador principal e reabra a aba do Instagram por lá!")
+        # Define User-Agent padrão moderno
+        L.context._session.headers.update({
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36'
+        })
         
     return L
 
