@@ -361,6 +361,27 @@
       border-color: var(--color-danger);
       transform: scale(1.05);
     }
+
+    .btn-edit-small {
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      color: #a5b4fc;
+      padding: 0.4rem 0.7rem;
+      font-size: 0.8rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: var(--transition-fast);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .btn-edit-small:hover {
+      background: var(--color-primary);
+      color: #ffffff;
+      border-color: var(--color-primary);
+      transform: scale(1.05);
+    }
     
     /* ----------------------------------------------------
        ABAS DE TEMAS / CANAIS (INTERACTION)
@@ -902,6 +923,7 @@
       
       <form id="add-profile-form">
         <input type="hidden" id="modal-channel-key">
+        <input type="hidden" id="modal-profile-index">
         
         <div class="form-group">
           <label for="modal-username">Username do Instagram</label>
@@ -1051,9 +1073,14 @@
                       <i class="fa-brands fa-instagram"></i>
                       <a href="https://instagram.com/${prof.username}" target="_blank" class="profile-username">@${prof.username}</a>
                     </div>
-                    <button class="btn-danger-small" onclick="deleteProfile('${key}', ${idx})">
-                      <i class="fa-regular fa-trash-can"></i>
-                    </button>
+                    <div style="display: flex; gap: 0.35rem;">
+                      <button class="btn-edit-small" onclick="openEditProfileModal('${key}', ${idx})" title="Editar Filtros">
+                        <i class="fa-regular fa-pen-to-square"></i>
+                      </button>
+                      <button class="btn-danger-small" onclick="deleteProfile('${key}', ${idx})" title="Excluir Perfil">
+                        <i class="fa-regular fa-trash-can"></i>
+                      </button>
+                    </div>
                   </div>
                   <div class="keywords-label">Palavras-chave</div>
                   <div class="keywords-list">
@@ -1169,18 +1196,46 @@
     }
 
     // ----------------------------------------------------
-    // MODAL DE PERFIL: ADICIONAR E REMOVER
+    // MODAL DE PERFIL: ADICIONAR, EDITAR E REMOVER
     // ----------------------------------------------------
     function openAddProfileModal(channelKey) {
       const modal = document.getElementById("add-profile-modal");
+      
       document.getElementById("modal-channel-key").value = channelKey;
+      document.getElementById("modal-profile-index").value = ""; // Limpa índice (indica Nova Adição)
       
       const chName = currentConfig.channels[channelKey].name;
       document.getElementById("modal-channel-title").innerText = `Adicionar Perfil a: ${chName}`;
       
-      // Limpa formulário
-      document.getElementById("modal-username").value = "";
+      const usernameInput = document.getElementById("modal-username");
+      usernameInput.value = "";
+      usernameInput.readOnly = false; // Permite digitação
+      
       document.getElementById("modal-keywords").value = "";
+      
+      // Ajusta o botão de submit do modal
+      modal.querySelector("button[type='submit']").innerText = "Adicionar Perfil";
+      
+      modal.classList.add("show");
+    }
+
+    function openEditProfileModal(channelKey, index) {
+      const modal = document.getElementById("add-profile-modal");
+      const prof = currentConfig.channels[channelKey].profiles[index];
+      
+      document.getElementById("modal-channel-key").value = channelKey;
+      document.getElementById("modal-profile-index").value = index; // Armazena o índice do perfil
+      
+      document.getElementById("modal-channel-title").innerText = `Editar Filtros de: @${prof.username}`;
+      
+      const usernameInput = document.getElementById("modal-username");
+      usernameInput.value = prof.username;
+      usernameInput.readOnly = true; // Bloqueia alteração do username
+      
+      document.getElementById("modal-keywords").value = (prof.keywords || []).join(", ");
+      
+      // Ajusta o botão de submit do modal
+      modal.querySelector("button[type='submit']").innerText = "Salvar Filtros";
       
       modal.classList.add("show");
     }
@@ -1193,6 +1248,7 @@
       e.preventDefault();
       
       const chKey = document.getElementById("modal-channel-key").value;
+      const indexVal = document.getElementById("modal-profile-index").value;
       const usernameInput = document.getElementById("modal-username").value.trim().toLowerCase().replace("@", "");
       const keywordsInput = document.getElementById("modal-keywords").value.trim();
       
@@ -1211,17 +1267,22 @@
         currentConfig.channels[chKey].profiles = [];
       }
       
-      // Verifica se o perfil já existe na aba deste canal
-      const alreadyExists = currentConfig.channels[chKey].profiles.some(p => p.username === usernameInput);
-      if (alreadyExists) {
-        showToast(`O perfil @${usernameInput} já está cadastrado neste canal!`, "error");
-        return;
+      if (indexVal !== "") {
+        // FLUXO DE EDIÇÃO: Atualiza o perfil no índice correspondente
+        currentConfig.channels[chKey].profiles[indexVal].keywords = keywords;
+      } else {
+        // FLUXO DE ADIÇÃO: Valida duplicados e insere novo perfil
+        const alreadyExists = currentConfig.channels[chKey].profiles.some(p => p.username === usernameInput);
+        if (alreadyExists) {
+          showToast(`O perfil @${usernameInput} já está cadastrado neste canal!`, "error");
+          return;
+        }
+        
+        currentConfig.channels[chKey].profiles.push({
+          username: usernameInput,
+          keywords: keywords
+        });
       }
-      
-      currentConfig.channels[chKey].profiles.push({
-        username: usernameInput,
-        keywords: keywords
-      });
       
       closeModal();
       await saveConfigToServer();
