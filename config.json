@@ -1,0 +1,84 @@
+{
+  "telegram_bot_token": "",
+  "github_repo_url": "",
+  "run_git_sync": false,
+  "channels": {
+    "roles": {
+      "name": "Rolês",
+      "telegram_chat_id": "",
+      "include_caption": true,
+      "profiles": [
+        {
+          "username": "floripando",
+          "keywords": ["rolê", "onde ir", "floripa", "sair", "festa"]
+        }
+      ]
+    },
+    "jiujitsu": {
+      "name": "Jiu Jitsu",
+      "telegram_chat_id": "",
+      "include_caption": false,
+      "profiles": [
+        {
+          "username": "graciebarra",
+          "keywords": []
+        }
+      ]
+    },
+    "receitas": {
+      "name": "Receitas",
+      "telegram_chat_id": "",
+      "include_caption": true,
+      "profiles": [
+        {
+          "username": "tastemadebr",
+          "keywords": ["receita", "doce", "salgado", "sobremesa", "jantar"]
+        }
+      ]
+    },
+    "filmes_series": {
+      "name": "Filmes e Séries",
+      "telegram_chat_id": "",
+      "include_caption": true,
+      "profiles": [
+        {
+          "username": "netflixbrasil",
+          "keywords": ["série", "filme", "estreia", "dica"]
+        }
+      ]
+    },
+    "trilhas_rumos": {
+      "name": "Trilhas e Rumos",
+      "telegram_chat_id": "",
+      "include_caption": true,
+      "profiles": [
+        {
+          "username": "trilhasemfloripa",
+          "keywords": ["trilha", "viagem", "natureza", "praia", "floripa"]
+        }
+      ]
+    },
+    "noticias": {
+      "name": "Notícias",
+      "telegram_chat_id": "",
+      "include_caption": true,
+      "profiles": [
+        {
+          "username": "ndmais",
+          "keywords": ["florianópolis", "segurança", "trânsito", "política", "região"]
+        }
+      ]
+    },
+    "vereadores_floripa": {
+      "name": "Vereadores Floripa",
+      "telegram_chat_id": "",
+      "include_caption": true,
+      "profiles": [
+        {
+          "username": "camarafloripa",
+          "keywords": ["vereador", "votação", "projeto", "lei", "florianópolis"]
+        }
+      ]
+    }
+  }
+}
