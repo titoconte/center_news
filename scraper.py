@@ -42,7 +42,9 @@ def get_instagram_session():
     Obtém cookies do Instagram de navegadores instalados (Chrome, Edge, Firefox)
     para injetar no Instaloader. Isso evita login com usuário/senha e reduz bloqueios.
     """
+    # max_connection_attempts=1 impede loops infinitos do Instaloader em caso de erros/redirects de rede
     L = instaloader.Instaloader(
+        max_connection_attempts=1,
         download_pictures=False,
         download_videos=False,
         download_comments=False,
@@ -319,7 +321,12 @@ def run_scraper():
                 time.sleep(15)
                 
             except Exception as e:
-                print(f"  [ERRO] Falha ao processar perfil @{username}: {e}")
+                err_msg = str(e)
+                if "graphql/query" in err_msg or "Expecting value" in err_msg or "redirect" in err_msg.lower():
+                    print(f"  [AVISO/BLOQUEIO] O Instagram exigiu verificação de segurança (desafio/login) na sua conta logada.")
+                    print(f"  [AÇÃO RECOMENDADA] Abra o seu navegador Firefox (de onde o robô obteve a sessão), entre no Instagram.com e verifique se há alguma tela de 'Atividade Suspeita de Login' ou desafio de SMS/E-mail. Confirme a atividade clicando em 'FUI EU' para liberar os acessos do robô imediatamente!")
+                else:
+                    print(f"  [ERRO] Falha ao processar perfil @{username}: {e}")
                 time.sleep(5)
                 continue
                 
