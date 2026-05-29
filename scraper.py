@@ -79,9 +79,21 @@ def get_instagram_session():
             # Atualiza os cookies da sessão de requests interna do Instaloader
             L.context._session.cookies.update(cookies)
             
-            # Define o User-Agent correspondente ao navegador de origem
+            # Extrai o token CSRF dos cookies e o define no cabeçalho X-CSRFToken
+            # e adiciona o header Referer de segurança (ambos obrigatórios para validar requisições GraphQL logadas)
+            cookies_dict = requests.utils.dict_from_cookiejar(cookies)
+            csrf_token = cookies_dict.get('csrftoken')
+            
+            # Define o User-Agent correspondente ao navegador de origem e os cabeçalhos de segurança
             ua = user_agents.get(browser, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36')
-            L.context._session.headers.update({'User-Agent': ua})
+            headers = {
+                'User-Agent': ua,
+                'Referer': 'https://www.instagram.com/'
+            }
+            if csrf_token:
+                headers['X-CSRFToken'] = csrf_token
+                
+            L.context._session.headers.update(headers)
             
             # Testa se a sessão está funcional de verdade usando L.test_login()
             print(f"[INFO] Validando sessão ativa no Instagram obtida do {browser.capitalize()}...")
