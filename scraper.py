@@ -61,7 +61,7 @@ def get_instagram_session():
     }
     
     print("[INFO] Tentando extrair cookies do Instagram dos navegadores locais...")
-    browsers = ['chrome', 'edge', 'firefox', 'opera']
+    browsers = ['firefox', 'chrome', 'edge', 'opera']
     cookies_loaded = False
     
     for browser in browsers:
