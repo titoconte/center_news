@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Curadoria Instagram ➔ Telegram</title>
+  
+  <!-- Fontes e Ícones -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    /* ----------------------------------------------------
+       ESTILOS GERAIS & DESIGN SYSTEM (Premium Dark Mode)
+       ---------------------------------------------------- */
+    :root {
+      --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #020617 100%);
+      --panel-bg: rgba(30, 41, 59, 0.45);
+      --panel-border: rgba(255, 255, 255, 0.08);
+      --glass-glow: rgba(99, 102, 241, 0.15);
+      
+      --color-primary: #6366f1;     /* Indigo */
+      --color-primary-hover: #4f46e5;
+      --color-secondary: #06b6d4;   /* Cyan */
+      --color-success: #10b981;     /* Emerald */
+      --color-danger: #ef4444;      /* Red */
+      --color-warning: #f59e0b;     /* Amber */
+      
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dark: #64748b;
+      
+      --font-title: 'Outfit', sans-serif;
+      --font-body: 'Inter', sans-serif;
+      
+      --shadow-premium: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      --transition-fast: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: var(--font-body);
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+    
+    /* ----------------------------------------------------
+       LAYOUT PRINCIPAL
+       ---------------------------------------------------- */
+    .container {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 2rem;
+      width: 100%;
+      flex-grow: 1;
+    }
+    
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--panel-border);
+      padding-bottom: 1.5rem;
+    }
+    
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .logo-container {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
+    }
+    
+    h1 {
+      font-family: var(--font-title);
+      font-size: 1.8rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      background: linear-gradient(to right, #ffffff 30%, #a5b4fc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 0.1rem;
+    }
+    
+    /* ----------------------------------------------------
+       COMPUTADOR / GRID PRINCIPAL
+       ---------------------------------------------------- */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+    
+    @media (max-width: 1024px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    /* ----------------------------------------------------
+       CARDS E EFEITOS DE VIDRO (GLASSMORPHISM)
+       ---------------------------------------------------- */
+    .glass-card {
+      background: var(--panel-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--panel-border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: var(--shadow-premium);
+      transition: var(--transition-fast);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .glass-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: transparent;
+      transition: var(--transition-fast);
+    }
+    
+    .glass-card:hover {
+      border-color: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.45);
+    }
+    
+    /* ----------------------------------------------------
+       PAINEL LATERAL DE CONTROLE GLOBAL
+       ---------------------------------------------------- */
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    
+    .section-title {
+      font-family: var(--font-title);
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #ffffff;
+    }
+    
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+    
+    .form-group label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+    
+    .input-wrapper {
+      position: relative;
+    }
+    
+    .input-wrapper i {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-dark);
+      font-size: 0.9rem;
+    }
+    
+    .input-control {
+      width: 100%;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 0.75rem 0.75rem 0.75rem 2.2rem;
+      color: #ffffff;
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      transition: var(--transition-fast);
+    }
+    
+    .input-control:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 10px rgba(99, 102, 241, 0.25);
+      background: rgba(15, 23, 42, 0.8);
+    }
+    
+    /* Checkbox Customizado */
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-top: 1rem;
+      cursor: pointer;
+      user-select: none;
+    }
+    
+    .checkbox-group input {
+      display: none;
+    }
+    
+    .checkbox-custom {
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition-fast);
+    }
+    
+    .checkbox-group input:checked + .checkbox-custom {
+      background: var(--color-success);
+      border-color: var(--color-success);
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+    }
+    
+    .checkbox-custom i {
+      color: #fff;
+      font-size: 0.75rem;
+      display: none;
+    }
+    
+    .checkbox-group input:checked + .checkbox-custom i {
+      display: block;
+    }
+    
+    .checkbox-label {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-main);
+    }
+    
+    /* ----------------------------------------------------
+       BOTÕES MODERNOS E ANIMAÇÕES
+       ---------------------------------------------------- */
+    .btn {
+      width: 100%;
+      border: none;
+      border-radius: 10px;
+      padding: 0.85rem 1.5rem;
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      transition: var(--transition-fast);
+      text-decoration: none;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
+      color: #ffffff;
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.35);
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+    }
+    
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+    
+    .btn-success {
+      background: linear-gradient(135deg, var(--color-success) 0%, #059669 100%);
+      color: #ffffff;
+      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.35);
+    }
+    
+    .btn-success:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+    }
+    
+    .btn-success:disabled {
+      background: var(--text-dark);
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      color: var(--text-main);
+    }
+    
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .btn-small {
+      padding: 0.45rem 0.75rem;
+      font-size: 0.8rem;
+      border-radius: 6px;
+      width: auto;
+    }
+    
+    .btn-danger-small {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+      padding: 0.4rem 0.7rem;
+      font-size: 0.8rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: var(--transition-fast);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    
+    .btn-danger-small:hover {
+      background: var(--color-danger);
+      color: #ffffff;
+      border-color: var(--color-danger);
+      transform: scale(1.05);
+    }
+    
+    /* ----------------------------------------------------
+       ABAS DE TEMAS / CANAIS (INTERACTION)
+       ---------------------------------------------------- */
+    .tabs-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    
+    .tabs-nav {
+      display: flex;
+      gap: 0.5rem;
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    
+    .tabs-nav::-webkit-scrollbar {
+      height: 4px;
+    }
+    
+    .tabs-nav::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+    }
+    
+    .tab-btn {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      color: var(--text-muted);
+      padding: 0.75rem 1.25rem;
+      border-radius: 10px;
+      font-family: var(--font-title);
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: var(--transition-fast);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .tab-btn:hover {
+      background: rgba(255, 255, 255, 0.07);
+      color: var(--text-main);
+    }
+    
+    .tab-btn.active {
+      background: rgba(99, 102, 241, 0.15);
+      border-color: rgba(99, 102, 241, 0.4);
+      color: #a5b4fc;
+      box-shadow: inset 0 0 10px rgba(99, 102, 241, 0.2);
+    }
+    
+    /* ----------------------------------------------------
+       CONTEÚDO DA ABA SELECIONADA
+       ---------------------------------------------------- */
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .channel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    
+    .channel-title-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    
+    .channel-icon {
+      font-size: 1.6rem;
+      background: rgba(6, 182, 212, 0.15);
+      color: var(--color-secondary);
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .channel-title {
+      font-family: var(--font-title);
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+    
+    .channel-badge {
+      font-size: 0.72rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 6px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    
+    .badge-caption-true {
+      background: rgba(16, 185, 129, 0.15);
+      color: #a7f3d0;
+      border: 1px solid rgba(16, 185, 129, 0.25);
+    }
+    
+    .badge-caption-false {
+      background: rgba(245, 158, 11, 0.15);
+      color: #fef3c7;
+      border: 1px solid rgba(245, 158, 11, 0.25);
+    }
+    
+    /* ----------------------------------------------------
+       LISTAGEM DE PERFIS E CARDS
+       ---------------------------------------------------- */
+    .profiles-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+    
+    .profile-card {
+      background: rgba(15, 23, 42, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: var(--transition-fast);
+    }
+    
+    .profile-card:hover {
+      border-color: rgba(99, 102, 241, 0.3);
+      transform: translateY(-2px);
+      background: rgba(15, 23, 42, 0.6);
+    }
+    
+    .profile-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+    
+    .profile-name-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .profile-name-wrapper i {
+      color: #d946ef; /* Magenta */
+    }
+    
+    .profile-username {
+      font-weight: 600;
+      font-size: 1rem;
+      color: #ffffff;
+      text-decoration: none;
+    }
+    
+    .profile-username:hover {
+      text-decoration: underline;
+    }
+    
+    .keywords-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 0.4rem;
+    }
+    
+    .keywords-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin-bottom: 1rem;
+    }
+    
+    .keyword-tag {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      padding: 0.25rem 0.5rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+    }
+    
+    .keyword-tag-all {
+      background: rgba(6, 182, 212, 0.1);
+      border-color: rgba(6, 182, 212, 0.2);
+      color: #c7d2fe;
+      font-style: italic;
+    }
+    
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 3rem;
+      background: rgba(15, 23, 42, 0.2);
+      border: 1px dashed rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      color: var(--text-muted);
+    }
+    
+    .empty-state i {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: var(--text-dark);
+    }
+    
+    /* ----------------------------------------------------
+       MODAL DE ADICIONAR PERFIL
+       ---------------------------------------------------- */
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(2, 6, 17, 0.8);
+      backdrop-filter: blur(8px);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    
+    .modal-backdrop.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    
+    .modal-container {
+      width: 100%;
+      max-width: 500px;
+      transform: scale(0.9);
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    
+    .modal-backdrop.show .modal-container {
+      transform: scale(1);
+    }
+    
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .modal-title {
+      font-family: var(--font-title);
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+    
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: var(--transition-fast);
+    }
+    
+    .modal-close:hover {
+      color: #fff;
+    }
+    
+    .modal-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    
+    /* ----------------------------------------------------
+       CONSOLE DE LOGS EM TEMPO REAL
+       ---------------------------------------------------- */
+    .console-card {
+      background: #020617;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      font-family: 'Courier New', Courier, monospace;
+      padding: 1rem;
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.8);
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    
+    .console-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .console-dot {
+      width: 10px;
+      height: 10px;
+      background: var(--color-danger);
+      border-radius: 50%;
+      display: inline-block;
+    }
+    
+    .console-dot.running {
+      background: var(--color-success);
+      box-shadow: 0 0 8px var(--color-success);
+      animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes pulse {
+      0% { opacity: 0.6; }
+      50% { opacity: 1; }
+      100% { opacity: 0.6; }
+    }
+    
+    .console-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .console-output {
+      height: 250px;
+      overflow-y: auto;
+      font-size: 0.85rem;
+      color: #38bdf8; /* Light Blue */
+      line-height: 1.5;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      padding-right: 0.5rem;
+    }
+    
+    .console-output::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .console-output::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 3px;
+    }
+    
+    .log-line {
+      word-break: break-all;
+    }
+    
+    .log-success { color: var(--color-success); }
+    .log-error { color: var(--color-danger); }
+    .log-warn { color: var(--color-warning); }
+    .log-info { color: #38bdf8; }
+    
+    /* ----------------------------------------------------
+       NOTIFICAÇÕES DE TOAST
+       ---------------------------------------------------- */
+    .toast-container {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      z-index: 1000;
+    }
+    
+    .toast {
+      background: rgba(30, 41, 59, 0.9);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--color-primary);
+      border-radius: 8px;
+      padding: 0.85rem 1.25rem;
+      color: #fff;
+      font-size: 0.88rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      transform: translateX(120%);
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    
+    .toast.show {
+      transform: translateX(0);
+    }
+    
+    .toast-success { border-color: var(--color-success); }
+    .toast-error { border-color: var(--color-danger); }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- CABEÇALHO -->
+    <header>
+      <div class="brand-section">
+        <div class="logo-container">
+          <i class="fa-brands fa-instagram"></i>
+        </div>
+        <div>
+          <h1>Curadoria Instagram</h1>
+          <div class="subtitle">Scraper Inteligente ➔ Canais do Telegram</div>
+        </div>
+      </div>
+      
+      <!-- LOGO SECUNDÁRIA TELEGRAM -->
+      <div class="brand-section" style="opacity: 0.75;">
+        <div class="logo-container" style="background: linear-gradient(135deg, #229ED9 0%, #229ED9 100%); width: 40px; height: 40px; font-size: 1.2rem; box-shadow: 0 0 10px rgba(34, 158, 217, 0.3);">
+          <i class="fa-brands fa-telegram"></i>
+        </div>
+      </div>
+    </header>
+
+    <!-- GRID PRINCIPAL -->
+    <div class="dashboard-grid">
+      
+      <!-- COLUNA DA ESQUERDA (CONFIGURAÇÃO GLOBAL E EXECUÇÃO) -->
+      <div class="sidebar">
+        
+        <!-- CARD DE EXECUÇÃO -->
+        <div class="glass-card" style="border-top: 4px solid var(--color-success);">
+          <div class="section-title">
+            <i class="fa-solid fa-play" style="color: var(--color-success);"></i> Controles do Robô
+          </div>
+          <p class="subtitle" style="margin-bottom: 1.25rem; line-height: 1.4;">
+            Rode o robô de scraping agora. Ele processará os novos posts do Instagram e enviará para o Telegram imediatamente.
+          </p>
+          <button id="btn-run-scraper" class="btn btn-success">
+            <i class="fa-solid fa-bolt"></i> Executar Scraper
+          </button>
+          
+          <!-- CONSOLE DE LOGS RÁPIDOS -->
+          <div class="console-card">
+            <div class="console-header">
+              <div class="console-title">Console de Logs</div>
+              <div id="console-status" class="console-dot"></div>
+            </div>
+            <div id="console-output" class="console-output">
+              <span class="log-line log-info">Aguardando execução...</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- CARD DE CONFIGURAÇÕES GERAIS -->
+        <div class="glass-card" style="border-top: 4px solid var(--color-primary);">
+          <div class="section-title">
+            <i class="fa-solid fa-sliders" style="color: var(--color-primary);"></i> Configuração Global
+          </div>
+          
+          <form id="global-config-form">
+            <div class="form-group">
+              <label for="telegram-token">Telegram Bot Token</label>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-key"></i>
+                <input type="password" id="telegram-token" class="input-control" placeholder="123456789:ABCDefGhIjK...">
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="github-repo">Repositório Git Remoto (Opcional)</label>
+              <div class="input-wrapper">
+                <i class="fa-brands fa-github"></i>
+                <input type="text" id="github-repo" class="input-control" placeholder="usuario/repositorio">
+              </div>
+            </div>
+            
+            <label class="checkbox-group">
+              <input type="checkbox" id="git-sync">
+              <span class="checkbox-custom">
+                <i class="fa-solid fa-check"></i>
+              </span>
+              <span class="checkbox-label">Auto Git Sync & Push</span>
+            </label>
+            
+            <button type="submit" class="btn btn-primary btn-small" style="margin-top: 1.5rem; float: right;">
+              <i class="fa-solid fa-floppy-disk"></i> Salvar Globais
+            </button>
+          </form>
+        </div>
+
+      </div>
+
+      <!-- COLUNA DA DIREITA (GERENCIAMENTO DE CANAIS E PERFIS) -->
+      <div class="tabs-container">
+        
+        <!-- ABAS DOS TEMAS/CANAIS -->
+        <div class="tabs-nav" id="channels-tab-nav">
+          <!-- Gerado Dinamicamente -->
+        </div>
+
+        <!-- CONTEÚDO DAS ABAS -->
+        <div class="glass-card" id="channels-tab-content-wrapper" style="min-height: 450px;">
+          <!-- Gerado Dinamicamente -->
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL ADICIONAR PERFIL -->
+  <div class="modal-backdrop" id="add-profile-modal">
+    <div class="modal-container glass-card">
+      <div class="modal-header">
+        <div class="modal-title" id="modal-channel-title">Adicionar Perfil</div>
+        <button class="modal-close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      
+      <form id="add-profile-form">
+        <input type="hidden" id="modal-channel-key">
+        
+        <div class="form-group">
+          <label for="modal-username">Username do Instagram</label>
+          <div class="input-wrapper">
+            <i class="fa-brands fa-instagram"></i>
+            <input type="text" id="modal-username" class="input-control" required placeholder="ex: floripando">
+          </div>
+          <p class="subtitle" style="margin-top: 0.35rem; font-size: 0.75rem;">Apenas o nome de usuário, sem o @</p>
+        </div>
+        
+        <div class="form-group">
+          <label for="modal-keywords">Palavras-chave de Filtro (Opcional)</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-tags"></i>
+            <input type="text" id="modal-keywords" class="input-control" placeholder="ex: rolê, show, festa">
+          </div>
+          <p class="subtitle" style="margin-top: 0.35rem; font-size: 0.75rem; line-height: 1.3;">
+            Separe os termos por vírgula. Se preenchido, apenas posts com pelo menos uma das palavras na legenda serão enviados. Deixe vazio para coletar tudo.
+          </p>
+        </div>
+        
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Adicionar Perfil</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- CONTAINER DE NOTIFICAÇÕES -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- SCRIPT DE LÓGICA E INTEGRAÇÃO -->
+  <script>
+    // Armazena as configurações localmente
+    let currentConfig = {};
+    let activeChannelKey = "";
+    
+    // Elementos do DOM
+    const tabNav = document.getElementById("channels-tab-nav");
+    const tabContentWrapper = document.getElementById("channels-tab-content-wrapper");
+    const runScraperBtn = document.getElementById("btn-run-scraper");
+    const consoleOutput = document.getElementById("console-output");
+    const consoleStatus = document.getElementById("console-status");
+    
+    // Mapeamento de Ícones decorativos para os Canais
+    const channelIcons = {
+      roles: "fa-solid fa-champagne-glasses",
+      jiujitsu: "fa-solid fa-user-ninja",
+      receitas: "fa-solid fa-utensils",
+      filmes_series: "fa-solid fa-film",
+      trilhas_rumos: "fa-solid fa-compass",
+      noticias: "fa-solid fa-newspaper",
+      vereadores_floripa: "fa-solid fa-building-columns"
+    };
+
+    // ----------------------------------------------------
+    // INICIALIZAÇÃO E CARREGAMENTO DE DADOS
+    // ----------------------------------------------------
+    async function loadConfig() {
+      try {
+        const response = await fetch("/api/config");
+        currentConfig = await response.json();
+        
+        // Preenche campos globais
+        document.getElementById("telegram-token").value = currentConfig.telegram_bot_token || "";
+        document.getElementById("github-repo").value = currentConfig.github_repo_url || "";
+        document.getElementById("git-sync").checked = currentConfig.run_git_sync || false;
+        
+        renderTabs();
+      } catch (err) {
+        showToast("Falha ao carregar configurações do servidor", "error");
+      }
+    }
+
+    // ----------------------------------------------------
+    // RENDERIZADOR DE ABAS DE CANAIS
+    // ----------------------------------------------------
+    function renderTabs() {
+      tabNav.innerHTML = "";
+      tabContentWrapper.innerHTML = "";
+      
+      const channels = currentConfig.channels || {};
+      const keys = Object.keys(channels);
+      
+      if (keys.length === 0) {
+        tabContentWrapper.innerHTML = `<div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i> Nenhum canal configurado.</div>`;
+        return;
+      }
+      
+      // Define a aba ativa padrão se não houver
+      if (!activeChannelKey || !channels[activeChannelKey]) {
+        activeChannelKey = keys[0];
+      }
+      
+      keys.forEach(key => {
+        const ch = channels[key];
+        const iconClass = channelIcons[key] || "fa-solid fa-folder";
+        
+        // Nav Item
+        const btn = document.createElement("button");
+        btn.className = `tab-btn ${key === activeChannelKey ? 'active' : ''}`;
+        btn.innerHTML = `<i class="${iconClass}"></i> ${ch.name}`;
+        btn.onclick = () => switchTab(key);
+        tabNav.appendChild(btn);
+        
+        // Conteúdo da Aba
+        const contentDiv = document.createElement("div");
+        contentDiv.className = `tab-content ${key === activeChannelKey ? 'active' : ''}`;
+        contentDiv.id = `content-${key}`;
+        
+        // Cabeçalho da Aba
+        const capBadge = ch.include_caption 
+          ? `<span class="channel-badge badge-caption-true">Legenda Ativa</span>`
+          : `<span class="channel-badge badge-caption-false">Apenas Link</span>`;
+          
+        let profilesHtml = "";
+        const profilesList = ch.profiles || [];
+        
+        if (profilesList.length === 0) {
+          profilesHtml = `
+            <div class="empty-state">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <p>Nenhum perfil cadastrado neste canal.</p>
+              <p style="font-size:0.8rem; margin-top:0.5rem;">Os posts desse canal não serão buscados até que você cadastre perfis.</p>
+            </div>
+          `;
+        } else {
+          profilesHtml = `<div class="profiles-grid">`;
+          profilesList.forEach((prof, idx) => {
+            let tagsHtml = "";
+            const kws = prof.keywords || [];
+            
+            if (kws.length === 0) {
+              tagsHtml = `<span class="keyword-tag keyword-tag-all">Todos os posts (Sem Filtro)</span>`;
+            } else {
+              kws.forEach(kw => {
+                tagsHtml += `<span class="keyword-tag"><i class="fa-solid fa-tag" style="font-size:0.6rem; margin-right:4px;"></i> ${kw}</span>`;
+              });
+            }
+            
+            profilesHtml += `
+              <div class="profile-card">
+                <div>
+                  <div class="profile-header">
+                    <div class="profile-name-wrapper">
+                      <i class="fa-brands fa-instagram"></i>
+                      <a href="https://instagram.com/${prof.username}" target="_blank" class="profile-username">@${prof.username}</a>
+                    </div>
+                    <button class="btn-danger-small" onclick="deleteProfile('${key}', ${idx})">
+                      <i class="fa-regular fa-trash-can"></i>
+                    </button>
+                  </div>
+                  <div class="keywords-label">Palavras-chave</div>
+                  <div class="keywords-list">
+                    ${tagsHtml}
+                  </div>
+                </div>
+              </div>
+            `;
+          });
+          profilesHtml += `</div>`;
+        }
+        
+        contentDiv.innerHTML = `
+          <div class="channel-header">
+            <div class="channel-title-wrapper">
+              <div class="channel-icon"><i class="${iconClass}"></i></div>
+              <div>
+                <div class="channel-title">${ch.name}</div>
+                <div class="subtitle" style="margin-top:0.2rem;">Configure a transmissão e os perfis curados.</div>
+              </div>
+            </div>
+            <div style="display:flex; align-items:center; gap:0.75rem;">
+              ${capBadge}
+              <button class="btn btn-primary btn-small" onclick="openAddProfileModal('${key}')">
+                <i class="fa-solid fa-plus"></i> Novo Perfil
+              </button>
+            </div>
+          </div>
+          
+          <!-- CONFIGURAÇÃO DO ID DO TELEGRAM PARA ESTE CANAL -->
+          <div class="form-group glass-card" style="background:rgba(15,23,42,0.25); border-color:rgba(255,255,255,0.04); margin-bottom:2rem; padding: 1rem 1.25rem;">
+            <div style="display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap;">
+              <div style="flex-grow:1; min-width: 250px;">
+                <label for="chat-id-${key}" style="font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">ID do Canal do Telegram (Chat ID)</label>
+                <div class="input-wrapper" style="margin-top:0.4rem;">
+                  <i class="fa-solid fa-circle-nodes"></i>
+                  <input type="text" id="chat-id-${key}" class="input-control" placeholder="ex: -100184758372" value="${ch.telegram_chat_id || ''}">
+                </div>
+              </div>
+              <button class="btn btn-secondary btn-small" onclick="saveChannelChatId('${key}')" style="height:38px;">
+                <i class="fa-solid fa-circle-check" style="color:var(--color-success);"></i> Salvar Chat ID
+              </button>
+            </div>
+            <p class="subtitle" style="margin-top:0.5rem; font-size:0.75rem; color:var(--text-dark);">
+              Dica: Adicione o seu bot como Administrador do canal do Telegram e insira o ID completo do canal (ex: <code>-100xxxxxxxxxx</code>).
+            </p>
+          </div>
+          
+          <!-- GRID DE PERFIS DO CANAL -->
+          <div class="section-title" style="font-size:0.95rem; color:var(--text-muted); margin-bottom:1rem;">
+            <i class="fa-solid fa-users" style="font-size:0.85rem;"></i> Perfis Monitorados
+          </div>
+          ${profilesHtml}
+        `;
+        
+        tabContentWrapper.appendChild(contentDiv);
+      });
+    }
+
+    function switchTab(key) {
+      activeChannelKey = key;
+      // Atualiza Navegação
+      document.querySelectorAll(".tab-btn").forEach((btn, idx) => {
+        const k = Object.keys(currentConfig.channels)[idx];
+        if (k === key) btn.classList.add("active");
+        else btn.classList.remove("active");
+      });
+      // Atualiza Conteúdos
+      document.querySelectorAll(".tab-content").forEach(content => {
+        if (content.id === `content-${key}`) content.classList.add("active");
+        else content.classList.remove("active");
+      });
+    }
+
+    // ----------------------------------------------------
+    // SALVAMENTO DE CONFIGURAÇÕES GERAIS
+    // ----------------------------------------------------
+    document.getElementById("global-config-form").onsubmit = async (e) => {
+      e.preventDefault();
+      
+      currentConfig.telegram_bot_token = document.getElementById("telegram-token").value.trim();
+      currentConfig.github_repo_url = document.getElementById("github-repo").value.trim();
+      currentConfig.run_git_sync = document.getElementById("git-sync").checked;
+      
+      await saveConfigToServer();
+    };
+
+    async function saveChannelChatId(key) {
+      const inputVal = document.getElementById(`chat-id-${key}`).value.trim();
+      currentConfig.channels[key].telegram_chat_id = inputVal;
+      await saveConfigToServer();
+    }
+
+    async function saveConfigToServer() {
+      try {
+        const response = await fetch("/api/config", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(currentConfig)
+        });
+        
+        if (response.ok) {
+          showToast("Configurações salvas com sucesso!", "success");
+          loadConfig(); // Recarrega dados
+        } else {
+          showToast("Falha ao salvar configurações no servidor", "error");
+        }
+      } catch (err) {
+        showToast("Erro de rede ao salvar configurações", "error");
+      }
+    }
+
+    // ----------------------------------------------------
+    // MODAL DE PERFIL: ADICIONAR E REMOVER
+    // ----------------------------------------------------
+    function openAddProfileModal(channelKey) {
+      const modal = document.getElementById("add-profile-modal");
+      document.getElementById("modal-channel-key").value = channelKey;
+      
+      const chName = currentConfig.channels[channelKey].name;
+      document.getElementById("modal-channel-title").innerText = `Adicionar Perfil a: ${chName}`;
+      
+      // Limpa formulário
+      document.getElementById("modal-username").value = "";
+      document.getElementById("modal-keywords").value = "";
+      
+      modal.classList.add("show");
+    }
+
+    function closeModal() {
+      document.getElementById("add-profile-modal").classList.remove("show");
+    }
+
+    document.getElementById("add-profile-form").onsubmit = async (e) => {
+      e.preventDefault();
+      
+      const chKey = document.getElementById("modal-channel-key").value;
+      const usernameInput = document.getElementById("modal-username").value.trim().toLowerCase().replace("@", "");
+      const keywordsInput = document.getElementById("modal-keywords").value.trim();
+      
+      if (!usernameInput) return;
+      
+      // Processa palavras-chave dividindo por vírgula
+      let keywords = [];
+      if (keywordsInput) {
+        keywords = keywordsInput.split(",")
+          .map(kw => kw.trim())
+          .filter(kw => kw.length > 0);
+      }
+      
+      // Inicializa perfis do canal se não existir
+      if (!currentConfig.channels[chKey].profiles) {
+        currentConfig.channels[chKey].profiles = [];
+      }
+      
+      // Verifica se o perfil já existe na aba deste canal
+      const alreadyExists = currentConfig.channels[chKey].profiles.some(p => p.username === usernameInput);
+      if (alreadyExists) {
+        showToast(`O perfil @${usernameInput} já está cadastrado neste canal!`, "error");
+        return;
+      }
+      
+      currentConfig.channels[chKey].profiles.push({
+        username: usernameInput,
+        keywords: keywords
+      });
+      
+      closeModal();
+      await saveConfigToServer();
+    };
+
+    async function deleteProfile(channelKey, index) {
+      if (confirm("Deseja realmente remover este perfil monitorado?")) {
+        currentConfig.channels[channelKey].profiles.splice(index, 1);
+        await saveConfigToServer();
+      }
+    }
+
+    // ----------------------------------------------------
+    // EXECUÇÃO DO SCRAPER E CONSOLE DE LOGS
+    // ----------------------------------------------------
+    let logSource = null;
+    
+    runScraperBtn.onclick = async () => {
+      if (runScraperBtn.disabled) return;
+      
+      // Limpa console
+      consoleOutput.innerHTML = '<span class="log-line log-info">Iniciando robô...</span>';
+      consoleStatus.className = "console-dot running";
+      runScraperBtn.disabled = true;
+      runScraperBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Executando...';
+      
+      try {
+        const response = await fetch("/api/run-scraper", { method: "POST" });
+        if (!response.ok) {
+          throw new Error("Falha ao iniciar o scraper.");
+        }
+        
+        // Escuta os logs em tempo real via Server-Sent Events (SSE)
+        if (logSource) {
+          logSource.close();
+        }
+        
+        logSource = new EventSource("/api/stream-logs");
+        
+        logSource.onmessage = (event) => {
+          const logData = event.data;
+          
+          if (logData === "__FINISHED__") {
+            logSource.close();
+            logSource = null;
+            consoleStatus.className = "console-dot";
+            runScraperBtn.disabled = false;
+            runScraperBtn.innerHTML = '<i class="fa-solid fa-bolt"></i> Executar Scraper';
+            addLogLine("Execução finalizada com sucesso!", "success");
+            showToast("Execução do scraper finalizada!", "success");
+            return;
+          }
+          
+          if (logData.startsWith("__ERROR__: ")) {
+            logSource.close();
+            logSource = null;
+            consoleStatus.className = "console-dot";
+            runScraperBtn.disabled = false;
+            runScraperBtn.innerHTML = '<i class="fa-solid fa-bolt"></i> Executar Scraper';
+            const errMsg = logData.replace("__ERROR__: ", "");
+            addLogLine(`[ERRO] ${errMsg}`, "error");
+            showToast("Erro durante a execução do scraper.", "error");
+            return;
+          }
+          
+          // Formata logs coloridos baseados nas palavras chaves do terminal
+          let type = "info";
+          if (logData.includes("[SUCESSO]")) type = "success";
+          else if (logData.includes("[ERRO]")) type = "error";
+          else if (logData.includes("[AVISO]")) type = "warn";
+          
+          addLogLine(logData, type);
+        };
+        
+        logSource.onerror = () => {
+          logSource.close();
+          logSource = null;
+          consoleStatus.className = "console-dot";
+          runScraperBtn.disabled = false;
+          runScraperBtn.innerHTML = '<i class="fa-solid fa-bolt"></i> Executar Scraper';
+          addLogLine("[ERRO] Conexão com o fluxo de logs perdida.", "error");
+        };
+        
+      } catch (err) {
+        consoleStatus.className = "console-dot";
+        runScraperBtn.disabled = false;
+        runScraperBtn.innerHTML = '<i class="fa-solid fa-bolt"></i> Executar Scraper';
+        addLogLine(`[ERRO] Falha ao iniciar execução: ${err.message}`, "error");
+        showToast("Falha ao iniciar execução do robô.", "error");
+      }
+    };
+    
+    function addLogLine(text, type = "info") {
+      const span = document.createElement("span");
+      span.className = `log-line log-${type}`;
+      span.textContent = text;
+      consoleOutput.appendChild(span);
+      // Rola para o final do console
+      consoleOutput.scrollTop = consoleOutput.scrollHeight;
+    }
+
+    // ----------------------------------------------------
+    // NOTIFICAÇÕES TOAST
+    // ----------------------------------------------------
+    function showToast(message, type = "success") {
+      const container = document.getElementById("toast-container");
+      const toast = document.createElement("div");
+      toast.className = `toast toast-${type}`;
+      
+      const icon = type === "success" 
+        ? '<i class="fa-solid fa-circle-check" style="color:var(--color-success);"></i>'
+        : '<i class="fa-solid fa-circle-xmark" style="color:var(--color-danger);"></i>';
+        
+      toast.innerHTML = `${icon} <span>${message}</span>`;
+      container.appendChild(toast);
+      
+      // Anima entrada
+      setTimeout(() => toast.classList.add("show"), 50);
+      
+      // Anima saída
+      setTimeout(() => {
+        toast.classList.remove("show");
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    // Inicialização da página
+    loadConfig();
+  </script>
+</body>
+</html>
