@@ -141,6 +141,48 @@ def translate_text(text):
         print(f"[AVISO] Falha ao traduzir texto: {e}")
         return text
 
+def send_telegram_photo(token, chat_id, photo_url, caption):
+    """
+    Envia uma foto para o Telegram via API sendPhoto, com legenda HTML acoplada.
+    """
+    if not token or not chat_id or not photo_url:
+        return False
+    url = f"https://api.telegram.org/bot{token}/sendPhoto"
+    payload = {
+        "chat_id": chat_id,
+        "photo": photo_url,
+        "caption": caption,
+        "parse_mode": "HTML"
+    }
+    try:
+        response = requests.post(url, json=payload, timeout=20)
+        res_data = response.json()
+        return response.status_code == 200 and res_data.get("ok")
+    except Exception as e:
+        print(f"[AVISO] Falha ao enviar foto ao Telegram: {e}")
+        return False
+
+def send_telegram_video(token, chat_id, video_url, caption):
+    """
+    Envia um vídeo para o Telegram via API sendVideo, com legenda HTML acoplada.
+    """
+    if not token or not chat_id or not video_url:
+        return False
+    url = f"https://api.telegram.org/bot{token}/sendVideo"
+    payload = {
+        "chat_id": chat_id,
+        "video": video_url,
+        "caption": caption,
+        "parse_mode": "HTML"
+    }
+    try:
+        response = requests.post(url, json=payload, timeout=25)
+        res_data = response.json()
+        return response.status_code == 200 and res_data.get("ok")
+    except Exception as e:
+        print(f"[AVISO] Falha ao enviar vídeo ao Telegram: {e}")
+        return False
+
 def send_telegram_message(token, chat_id, text):
     """
     Envia uma mensagem formatada para um canal específico do Telegram usando a API HTTP do Telegram.
@@ -200,7 +242,7 @@ def sync_with_github():
 def fetch_posts_via_api(session, username):
     """
     Busca posts recentes de um perfil usando a API nativa do Instagram Web (sem GraphQL).
-    Retorna uma lista de posts simplificados para evitar redirecionamentos e timeouts.
+    Retorna uma lista de posts simplificados com metadados de mídias e localização.
     """
     url = f"https://www.instagram.com/api/v1/feed/user/{username}/username/"
     headers = {
@@ -225,10 +267,41 @@ def fetch_posts_via_api(session, username):
             if caption_obj:
                 caption_text = caption_obj.get('text', '')
                 
+            # Extrai fotos e vídeos de forma robusta (suporta imagens, vídeos e carrosséis)
+            photo_url = None
+            video_url = None
+            media_type = item.get('media_type')
+            
+            if media_type == 8: # Carrossel
+                carousel = item.get('carousel_media', [])
+                if carousel:
+                    first = carousel[0]
+                    m_type = first.get('media_type')
+                    if m_type == 1:
+                        photo_url = first.get('image_versions2', {}).get('candidates', [{}])[0].get('url')
+                    elif m_type == 2:
+                        video_url = first.get('video_versions', [{}])[0].get('url')
+                        photo_url = first.get('image_versions2', {}).get('candidates', [{}])[0].get('url')
+            else:
+                if media_type == 1: # Imagem
+                    photo_url = item.get('image_versions2', {}).get('candidates', [{}])[0].get('url')
+                elif media_type == 2: # Vídeo
+                    video_url = item.get('video_versions', [{}])[0].get('url')
+                    photo_url = item.get('image_versions2', {}).get('candidates', [{}])[0].get('url')
+            
+            # Localização
+            location_name = ""
+            location_obj = item.get('location')
+            if location_obj:
+                location_name = location_obj.get('name', '')
+                
             posts.append({
                 'shortcode': shortcode,
                 'date_utc': date_utc,
-                'caption': caption_text
+                'caption': caption_text,
+                'photo_url': photo_url,
+                'video_url': video_url,
+                'location_name': location_name
             })
         return posts
     else:
@@ -272,6 +345,13 @@ def run_scraper():
         include_caption = channel_info.get("include_caption", True)
         profiles = channel_info.get("profiles", [])
         
+        # Novas Configurações Personalizadas por Canal
+        post_images = channel_info.get("post_images", True)
+        post_videos = channel_info.get("post_videos", True)
+        translate_caption = channel_info.get("translate_caption", True)
+        show_location = channel_info.get("show_location", False)
+        scan_days = int(channel_info.get("scan_days", 2))
+        
         print(f"\n[CANAL] Processando Tema: {channel_name} (Chave: {channel_key})")
         if not chat_id:
             print(f"[AVISO] Canal {channel_name} não possui Telegram Chat ID configurado. Pulando...")
@@ -293,10 +373,10 @@ def run_scraper():
                 # Itera pelos posts obtidos
                 post_count = 0
                 for post in posts:
-                    # Filtra posts muito antigos
+                    # Filtra posts muito antigos usando a janela de busca customizada (scan_days)
                     post_age = datetime.utcnow() - post['date_utc']
-                    if post_age > timedelta(days=2):
-                        print(f"    [INFO] Chegou a posts com mais de 48h de idade. Parando busca para @{username}.")
+                    if post_age > timedelta(days=scan_days):
+                        print(f"    [INFO] Chegou a posts com mais de {scan_days} dias de idade. Parando busca para @{username}.")
                         break
                         
                     shortcode = post['shortcode']
@@ -320,31 +400,74 @@ def run_scraper():
                     # 3. Processa a legenda e faz tradução se necessário
                     formatted_caption = ""
                     if include_caption and caption:
-                        print("    [TRADUÇÃO] Analisando legenda para tradução/formatação...")
-                        translated_caption = translate_text(caption)
-                        
-                        if translated_caption.strip() != caption.strip():
-                            formatted_caption = f"{translated_caption}\n\n<i>(Traduzido do Inglês)</i>"
-                        else:
-                            formatted_caption = translated_caption
+                        if translate_caption:
+                            # Faz a tradução se ativo no canal
+                            print("    [TRADUÇÃO] Analisando legenda para tradução/formatação...")
+                            translated_caption = translate_text(caption)
                             
+                            if translated_caption.strip() != caption.strip():
+                                formatted_caption = f"{translated_caption}\n\n<i>(Traduzido do Inglês)</i>"
+                            else:
+                                formatted_caption = translated_caption
+                        else:
+                            formatted_caption = caption
+                            
+                    # Localização opcional
+                    location_text = ""
+                    if show_location and post.get('location_name'):
+                        location_text = f"\n📍 <b>Local:</b> {post['location_name']}"
+                        
                     # 4. Formata a mensagem para o Telegram
                     if include_caption and formatted_caption:
                         message_text = (
-                            f"<b>📢 NOVO POST: @{username}</b>\n\n"
+                            f"<b>📢 NOVO POST: @{username}</b>{location_text}\n\n"
                             f"{formatted_caption}\n\n"
                             f"🔗 <a href='{post_url}'>Ver no Instagram</a>"
                         )
                     else:
                         message_text = (
-                            f"<b>🥋 Jiu Jitsu - Novo Post: @{username}</b>\n\n"
+                            f"<b>🥋 Jiu Jitsu - Novo Post: @{username}</b>{location_text}\n\n"
                             f"🔗 {post_url}"
                         )
                         
-                    # 5. Envia para o Telegram
-                    success = send_telegram_message(bot_token, chat_id, message_text)
+                    # 5. Envia as Mídias ou Texto para o Telegram
+                    success = False
+                    photo_url = post.get('photo_url')
+                    video_url = post.get('video_url')
                     
+                    # O Telegram limita a legenda em envios de fotos/vídeos a 1024 caracteres
+                    # Para textos maiores, enviamos a foto primeiro e o texto em seguida
+                    caption_to_send = message_text
+                    long_caption_msg = None
+                    if len(message_text) > 1024:
+                        caption_to_send = f"<b>📢 NOVO POST: @{username}</b>{location_text}\n\n(Legenda completa enviada abaixo...)\n\n🔗 <a href='{post_url}'>Ver no Instagram</a>"
+                        long_caption_msg = message_text
+                        
+                    if post_videos and video_url:
+                        print("    [MÍDIA] Transmitindo vídeo para o Telegram...")
+                        success = send_telegram_video(bot_token, chat_id, video_url, caption_to_send)
+                        if not success:
+                            # Fallback para foto
+                            success = send_telegram_photo(bot_token, chat_id, photo_url, caption_to_send)
+                    elif post_images and photo_url:
+                        print("    [MÍDIA] Transmitindo imagem para o Telegram...")
+                        success = send_telegram_photo(bot_token, chat_id, photo_url, caption_to_send)
+                    else:
+                        # Fallback de texto padrão
+                        print("    [TEXTO] Transmitindo apenas texto/link para o Telegram...")
+                        success = send_telegram_message(bot_token, chat_id, message_text)
+                        
+                    # Se falhar no envio de mídia (ex: link CDN expirou ou bloqueio do Telegram), tenta texto puro como fallback
+                    if not success:
+                        print("    [FALLBACK] Envio de mídia falhou. Tentando texto puro...")
+                        success = send_telegram_message(bot_token, chat_id, message_text)
+                        long_caption_msg = None # Já enviou o texto inteiro no fallback
+                        
                     if success:
+                        # Se enviou mídia com legenda cortada, manda a legenda inteira em seguida
+                        if long_caption_msg:
+                            send_telegram_message(bot_token, chat_id, long_caption_msg)
+                            
                         # 6. Registra no banco de dados
                         db["processed_posts"].append({
                             "shortcode": shortcode,

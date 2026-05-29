@@ -1110,23 +1110,69 @@
             </div>
           </div>
           
-          <!-- CONFIGURAÇÃO DO ID DO TELEGRAM PARA ESTE CANAL -->
-          <div class="form-group glass-card" style="background:rgba(15,23,42,0.25); border-color:rgba(255,255,255,0.04); margin-bottom:2rem; padding: 1rem 1.25rem;">
-            <div style="display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap;">
-              <div style="flex-grow:1; min-width: 250px;">
+          <!-- CONFIGURAÇÕES PERSONALIZADAS DO CANAL -->
+          <div class="glass-card" style="background:rgba(15,23,42,0.25); border-color:rgba(255,255,255,0.04); margin-bottom:2rem; padding: 1.25rem;">
+            <div class="section-title" style="font-size:0.9rem; margin-bottom:1rem; color:var(--text-muted);">
+              <i class="fa-solid fa-gear" style="font-size:0.8rem;"></i> Ajustes de Transmissão para ${ch.name}
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.25rem; margin-bottom: 1.25rem;">
+              <!-- ID do Telegram -->
+              <div style="grid-column: 1 / -1;">
                 <label for="chat-id-${key}" style="font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">ID do Canal do Telegram (Chat ID)</label>
                 <div class="input-wrapper" style="margin-top:0.4rem;">
                   <i class="fa-solid fa-circle-nodes"></i>
                   <input type="text" id="chat-id-${key}" class="input-control" placeholder="ex: -100184758372" value="${ch.telegram_chat_id || ''}">
                 </div>
               </div>
-              <button class="btn btn-secondary btn-small" onclick="saveChannelChatId('${key}')" style="height:38px;">
-                <i class="fa-solid fa-circle-check" style="color:var(--color-success);"></i> Salvar Chat ID
+              
+              <!-- Checkboxes de Customizações -->
+              <div style="display:flex; flex-direction:column; gap:0.75rem;">
+                <label class="checkbox-group">
+                  <input type="checkbox" id="post-images-${key}" ${ch.post_images !== false ? 'checked' : ''}>
+                  <span class="checkbox-custom"><i class="fa-solid fa-check"></i></span>
+                  <span class="checkbox-label"><i class="fa-regular fa-image" style="margin-right:6px; color:var(--color-secondary);"></i> Enviar Imagens</span>
+                </label>
+                
+                <label class="checkbox-group">
+                  <input type="checkbox" id="post-videos-${key}" ${ch.post_videos !== false ? 'checked' : ''}>
+                  <span class="checkbox-custom"><i class="fa-solid fa-check"></i></span>
+                  <span class="checkbox-label"><i class="fa-regular fa-file-video" style="margin-right:6px; color:var(--color-warning);"></i> Enviar Vídeos</span>
+                </label>
+              </div>
+              
+              <div style="display:flex; flex-direction:column; gap:0.75rem;">
+                <label class="checkbox-group">
+                  <input type="checkbox" id="translate-caption-${key}" ${ch.translate_caption !== false ? 'checked' : ''}>
+                  <span class="checkbox-custom"><i class="fa-solid fa-check"></i></span>
+                  <span class="checkbox-label"><i class="fa-solid fa-language" style="margin-right:6px; color:var(--color-primary);"></i> Traduzir Legenda</span>
+                </label>
+                
+                <label class="checkbox-group">
+                  <input type="checkbox" id="show-location-${key}" ${ch.show_location === true ? 'checked' : ''}>
+                  <span class="checkbox-custom"><i class="fa-solid fa-check"></i></span>
+                  <span class="checkbox-label"><i class="fa-solid fa-location-dot" style="margin-right:6px; color:var(--color-danger);"></i> Mostrar Localização</span>
+                </label>
+              </div>
+
+              <!-- Range temporal -->
+              <div>
+                <label for="scan-days-${key}" style="font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Janela de Busca (Dias)</label>
+                <div class="input-wrapper" style="margin-top:0.4rem;">
+                  <i class="fa-solid fa-calendar-days"></i>
+                  <input type="number" id="scan-days-${key}" class="input-control" min="1" max="30" placeholder="2" value="${ch.scan_days || 2}">
+                </div>
+              </div>
+            </div>
+            
+            <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,255,255,0.05); padding-top:0.75rem; margin-top:1rem;">
+              <p class="subtitle" style="font-size:0.75rem; color:var(--text-dark);">
+                Dica: Adicione o seu bot como Administrador do canal e insira o ID completo (ex: <code>-100xxxxxxxxxx</code>).
+              </p>
+              <button class="btn btn-primary btn-small" onclick="saveChannelSettings('${key}')">
+                <i class="fa-solid fa-floppy-disk"></i> Salvar Configurações
               </button>
             </div>
-            <p class="subtitle" style="margin-top:0.5rem; font-size:0.75rem; color:var(--text-dark);">
-              Dica: Adicione o seu bot como Administrador do canal do Telegram e insira o ID completo do canal (ex: <code>-100xxxxxxxxxx</code>).
-            </p>
           </div>
           
           <!-- GRID DE PERFIS DO CANAL -->
@@ -1168,9 +1214,21 @@
       await saveConfigToServer();
     };
 
-    async function saveChannelChatId(key) {
-      const inputVal = document.getElementById(`chat-id-${key}`).value.trim();
-      currentConfig.channels[key].telegram_chat_id = inputVal;
+    async function saveChannelSettings(key) {
+      const chatVal = document.getElementById(`chat-id-${key}`).value.trim();
+      const imagesChecked = document.getElementById(`post-images-${key}`).checked;
+      const videosChecked = document.getElementById(`post-videos-${key}`).checked;
+      const translateChecked = document.getElementById(`translate-caption-${key}`).checked;
+      const locationChecked = document.getElementById(`show-location-${key}`).checked;
+      const daysVal = parseInt(document.getElementById(`scan-days-${key}`).value) || 2;
+      
+      currentConfig.channels[key].telegram_chat_id = chatVal;
+      currentConfig.channels[key].post_images = imagesChecked;
+      currentConfig.channels[key].post_videos = videosChecked;
+      currentConfig.channels[key].translate_caption = translateChecked;
+      currentConfig.channels[key].show_location = locationChecked;
+      currentConfig.channels[key].scan_days = daysVal;
+      
       await saveConfigToServer();
     }
 
