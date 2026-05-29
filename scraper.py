@@ -1,0 +1,333 @@
+import os
+import json
+import time
+import subprocess
+from datetime import datetime, timedelta
+import requests
+import instaloader
+import browser_cookie3
+from deep_translator import GoogleTranslator
+
+# Configurações de caminhos de arquivos
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+CONFIG_FILE = os.path.join(BASE_DIR, "config.json")
+DATABASE_FILE = os.path.join(BASE_DIR, "database.json")
+
+def load_json(file_path):
+    """
+    Carrega e retorna o conteúdo de um arquivo JSON.
+    Retorna um dicionário vazio caso o arquivo não exista ou ocorra erro.
+    """
+    if not os.path.exists(file_path):
+        return {}
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except Exception as e:
+        print(f"[ERRO] Falha ao carregar JSON de {file_path}: {e}")
+        return {}
+
+def save_json(file_path, data):
+    """
+    Salva dados estruturados em um arquivo JSON com formatação amigável (indentação).
+    """
+    try:
+        with open(file_path, 'w', encoding='utf-8') as f:
+            json.dump(data, f, indent=2, ensure_ascii=False)
+    except Exception as e:
+        print(f"[ERRO] Falha ao salvar JSON em {file_path}: {e}")
+
+def get_instagram_session():
+    """
+    Obtém cookies do Instagram de navegadores instalados (Chrome, Edge, Firefox)
+    para injetar no Instaloader. Isso evita login com usuário/senha e reduz bloqueios.
+    """
+    L = instaloader.Instaloader(
+        download_pictures=False,
+        download_videos=False,
+        download_comments=False,
+        download_geotags=False,
+        save_metadata=False
+    )
+    
+    print("[INFO] Tentando extrair cookies do Instagram dos navegadores locais...")
+    browsers = ['chrome', 'edge', 'firefox', 'opera']
+    cookies_loaded = False
+    
+    for browser in browsers:
+        try:
+            print(f"[INFO] Buscando cookies no navegador: {browser}")
+            if browser == 'chrome':
+                cookies = browser_cookie3.chrome(domain_name='instagram.com')
+            elif browser == 'edge':
+                cookies = browser_cookie3.edge(domain_name='instagram.com')
+            elif browser == 'firefox':
+                cookies = browser_cookie3.firefox(domain_name='instagram.com')
+            elif browser == 'opera':
+                cookies = browser_cookie3.opera(domain_name='instagram.com')
+            
+            # Atualiza os cookies da sessão de requests interna do Instaloader
+            L.context._session.cookies.update(cookies)
+            
+            # Testa se a sessão está funcional tentando buscar um perfil público simples
+            # (ou checando se os cookies contêm a chave 'sessionid' que indica login ativo)
+            cookies_dict = requests.utils.dict_from_cookiejar(cookies)
+            if 'sessionid' in cookies_dict:
+                print(f"[SUCESSO] Sessão ativa do Instagram importada com sucesso do {browser.capitalize()}!")
+                cookies_loaded = True
+                break
+            else:
+                print(f"[AVISO] Cookies obtidos do {browser.capitalize()}, mas parecem não conter sessão logada.")
+        except Exception as e:
+            print(f"[AVISO] Não foi possível ler cookies do navegador {browser.capitalize()}: {e}")
+            continue
+            
+    if not cookies_loaded:
+        print("[AVISO] Nenhum cookie de sessão logada foi encontrado. O robô rodará de forma anônima.")
+        print("[DICA] Certifique-se de estar logado no Instagram no seu navegador Chrome, Edge ou Firefox!")
+        
+    return L
+
+def translate_text(text):
+    """
+    Traduz a legenda do post de inglês para português de forma automática e gratuita.
+    Retorna o texto original se não precisar de tradução ou se ocorrer algum erro.
+    """
+    if not text:
+        return ""
+    try:
+        # GoogleTranslator detecta automaticamente o idioma (source='auto') e traduz para pt
+        translator = GoogleTranslator(source='auto', target='pt')
+        translated = translator.translate(text)
+        
+        # Se a tradução retornar idêntica, pode ser que já estivesse em português
+        if translated.strip().lower() == text.strip().lower():
+            return text
+            
+        return translated
+    except Exception as e:
+        print(f"[AVISO] Falha ao traduzir texto: {e}")
+        return text
+
+def send_telegram_message(token, chat_id, text):
+    """
+    Envia uma mensagem formatada para um canal específico do Telegram usando a API HTTP do Telegram.
+    """
+    if not token or not chat_id:
+        print("[AVISO] Token do bot ou Chat ID não configurados. Envio ao Telegram ignorado.")
+        return False
+        
+    url = f"https://api.telegram.org/bot{token}/sendMessage"
+    payload = {
+        "chat_id": chat_id,
+        "text": text,
+        "parse_mode": "HTML",
+        "disable_web_page_preview": False
+    }
+    
+    try:
+        response = requests.post(url, json=payload, timeout=15)
+        res_data = response.json()
+        if response.status_code == 200 and res_data.get("ok"):
+            print(f"[SUCESSO] Mensagem enviada para o chat {chat_id}")
+            return True
+        else:
+            print(f"[ERRO] Erro na resposta do Telegram para {chat_id}: {res_data}")
+            return False
+    except Exception as e:
+        print(f"[ERRO] Falha ao se conectar com a API do Telegram: {e}")
+        return False
+
+def sync_with_github():
+    """
+    Executa os comandos Git automáticos para registrar as atualizações locais 
+    e fazer o push das configurações e base de dados para o repositório GitHub.
+    """
+    print("[INFO] Iniciando sincronização automática com o GitHub...")
+    try:
+        # 1. Adiciona os arquivos JSON locais no controle do git
+        subprocess.run(["git", "add", "config.json", "database.json"], check=True, cwd=BASE_DIR)
+        
+        # 2. Faz o commit com timestamp atual
+        commit_msg = f"auto: update configuration and database - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+        subprocess.run(["git", "commit", "-m", commit_msg], check=True, cwd=BASE_DIR)
+        
+        # 3. Faz o push para o repositório remoto na branch atual
+        # Primeiro, descobre o nome da branch atual
+        branch_res = subprocess.run(["git", "rev-parse", "--abbrev-ref", "HEAD"], capture_output=True, text=True, check=True, cwd=BASE_DIR)
+        current_branch = branch_res.stdout.strip()
+        
+        print(f"[INFO] Fazendo push na branch '{current_branch}'...")
+        subprocess.run(["git", "push", "origin", current_branch], check=True, cwd=BASE_DIR)
+        print("[SUCESSO] Sincronização e push no GitHub concluídos!")
+    except subprocess.CalledProcessError as e:
+        print(f"[AVISO] Sincronização com o Git falhou ou sem alterações a comitar: {e}")
+    except Exception as e:
+        print(f"[ERRO] Erro inesperado ao sincronizar com o GitHub: {e}")
+
+def run_scraper():
+    """
+    Função principal que gerencia o fluxo completo de scraping do Instagram,
+    filtragem por palavras-chave, tradução e envio ao Telegram.
+    """
+    print("=" * 60)
+    print(f"Iniciando Execução do Scraper: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print("=" * 60)
+    
+    # Carrega arquivos de dados
+    configs = load_json(CONFIG_FILE)
+    db = load_json(DATABASE_FILE)
+    
+    bot_token = configs.get("telegram_bot_token")
+    channels = configs.get("channels", {})
+    
+    if not bot_token:
+        print("[ERRO] Token do Bot do Telegram não encontrado no config.json! Abortando scraper.")
+        return
+        
+    # Inicializa banco de dados de processados se estiver vazio
+    if "processed_posts" not in db:
+        db["processed_posts"] = []
+        
+    processed_set = {post["shortcode"] for post in db["processed_posts"]}
+    
+    # Inicializa Instaloader com sessão ativa do navegador
+    L = get_instagram_session()
+    
+    new_posts_counter = 0
+    
+    # Varre cada canal do Telegram configurado
+    for channel_key, channel_info in channels.items():
+        channel_name = channel_info.get("name")
+        chat_id = channel_info.get("telegram_chat_id")
+        include_caption = channel_info.get("include_caption", True)
+        profiles = channel_info.get("profiles", [])
+        
+        print(f"\n[CANAL] Processando Tema: {channel_name} (Chave: {channel_key})")
+        if not chat_id:
+            print(f"[AVISO] Canal {channel_name} não possui Telegram Chat ID configurado. Pulando...")
+            continue
+            
+        # Varre cada perfil do Instagram cadastrado neste canal
+        for profile_item in profiles:
+            username = profile_item.get("username")
+            keywords = profile_item.get("keywords", [])
+            
+            if not username:
+                continue
+                
+            print(f"  [PERFIL] Buscando posts recentes de @{username}...")
+            try:
+                profile = instaloader.Profile.from_username(L.context, username)
+                
+                # Itera pelos posts (os mais recentes vêm primeiro)
+                post_count = 0
+                for post in profile.get_posts():
+                    # Evita varrer posts muito antigos
+                    # Como o robô roda pelo menos uma vez por dia, posts com mais de 2 dias (48h) já foram processados
+                    post_age = datetime.utcnow() - post.date_utc
+                    if post_age > timedelta(days=2):
+                        print(f"    [INFO] Chegou a posts com mais de 48h de idade. Parando busca para @{username}.")
+                        break
+                        
+                    # 1. Verifica se já processou este post anteriormente
+                    if post.shortcode in processed_set:
+                        continue
+                        
+                    caption = post.caption or ""
+                    post_url = f"https://www.instagram.com/p/{post.shortcode}/"
+                    
+                    # 2. Filtra por palavras-chave se configurado para o perfil
+                    if keywords:
+                        has_keyword = any(kw.lower() in caption.lower() for kw in keywords)
+                        if not has_keyword:
+                            # Ignora post por não conter nenhuma das palavras-chave mapeadas
+                            continue
+                            
+                    print(f"    [NOVO] Post detectado! Shortcode: {post.shortcode} - Publicado em: {post.date_local}")
+                    
+                    # 3. Processa a legenda e faz tradução se necessário
+                    formatted_caption = ""
+                    if include_caption and caption:
+                        # Faz a tradução automática (o deep-translator detecta se for inglês e traduz)
+                        print("    [TRADUÇÃO] Analisando legenda para tradução/formatação...")
+                        translated_caption = translate_text(caption)
+                        
+                        # Se houve tradução de fato (texto mudou), adiciona marcador sutil
+                        if translated_caption.strip() != caption.strip():
+                            formatted_caption = f"{translated_caption}\n\n<i>(Traduzido do Inglês)</i>"
+                        else:
+                            formatted_caption = translated_caption
+                            
+                    # 4. Formata a mensagem para o Telegram
+                    if include_caption and formatted_caption:
+                        # Mensagem com legenda
+                        message_text = (
+                            f"<b>📢 NOVO POST: @{username}</b>\n\n"
+                            f"{formatted_caption}\n\n"
+                            f"🔗 <a href='{post_url}'>Ver no Instagram</a>"
+                        )
+                    else:
+                        # Apenas o link do post (ex: canal Jiu Jitsu que não precisa de descrição)
+                        message_text = (
+                            f"<b>🥋 Jiu Jitsu - Novo Post: @{username}</b>\n\n"
+                            f"🔗 {post_url}"
+                        )
+                        
+                    # 5. Envia para o Telegram
+                    success = send_telegram_message(bot_token, chat_id, message_text)
+                    
+                    if success:
+                        # 6. Registra no banco de dados para evitar re-enviar
+                        db["processed_posts"].append({
+                            "shortcode": post.shortcode,
+                            "processed_at": datetime.now().strftime("%Y-%m-%d"),
+                            "channel": channel_key
+                        })
+                        processed_set.add(post.shortcode)
+                        new_posts_counter += 1
+                        
+                    # Atraso moderado entre envios ao Telegram
+                    time.sleep(3)
+                    
+                    # Limita a processar no máximo 5 posts novos por perfil por rodada
+                    # para evitar sobrecarga no chat do Telegram de uma só vez
+                    post_count += 1
+                    if post_count >= 5:
+                        break
+                        
+                # Adiciona delay de rate limit para não sobrecarregar requisições do Instagram
+                print(f"  [INFO] Concluído @{username}. Aguardando 15 segundos para o próximo perfil...")
+                time.sleep(15)
+                
+            except Exception as e:
+                print(f"  [ERRO] Falha ao processar perfil @{username}: {e}")
+                time.sleep(5)
+                continue
+                
+    # 7. Janela deslizante: Limpa registros com mais de 30 dias no database
+    print("\n[INFO] Fazendo manutenção preventiva no banco de dados local...")
+    limit_date = datetime.now() - timedelta(days=30)
+    cleaned_posts = []
+    
+    for item in db["processed_posts"]:
+        try:
+            processed_date = datetime.strptime(item["processed_at"], "%Y-%m-%d")
+            if processed_date >= limit_date:
+                cleaned_posts.append(item)
+        except Exception:
+            # Caso ocorra falha ao ler data antiga, mantém por segurança
+            cleaned_posts.append(item)
+            
+    db["processed_posts"] = cleaned_posts
+    save_json(DATABASE_FILE, db)
+    print(f"[INFO] Manutenção concluída. Registros históricos ativos: {len(db['processed_posts'])}")
+    
+    print(f"\n[INFO] Execução finalizada! Total de novos posts enviados: {new_posts_counter}")
+    
+    # 8. Sincronização com o GitHub se ativo no config
+    if configs.get("run_git_sync", False):
+        sync_with_github()
+
+if __name__ == "__main__":
+    run_scraper()
