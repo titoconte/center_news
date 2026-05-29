@@ -3,41 +3,57 @@
     "filmes_series": {
       "include_caption": true,
       "name": "Filmes e Séries",
+      "post_images": true,
+      "post_videos": true,
       "profiles": [],
-      "telegram_chat_id": "-1004295764897"
+      "scan_days": 14,
+      "show_location": false,
+      "telegram_chat_id": "-1004295764897",
+      "translate_caption": false
     },
     "jiujitsu": {
       "include_caption": false,
       "name": "Jiu Jitsu",
+      "post_images": false,
+      "post_videos": true,
       "profiles": [],
-      "telegram_chat_id": ""
+      "scan_days": 14,
+      "show_location": false,
+      "telegram_chat_id": "-1003746625105",
+      "translate_caption": false
     },
     "noticias": {
       "include_caption": true,
       "name": "Notícias",
+      "post_images": true,
+      "post_videos": true,
       "profiles": [
         {
-          "keywords": [
-            "florianópolis",
-            "segurança",
-            "trânsito",
-            "política",
-            "região"
-          ],
+          "keywords": [],
           "username": "ndmais"
         }
       ],
-      "telegram_chat_id": ""
+      "scan_days": 2,
+      "show_location": false,
+      "telegram_chat_id": "",
+      "translate_caption": false
     },
     "receitas": {
       "include_caption": true,
       "name": "Receitas",
+      "post_images": true,
+      "post_videos": true,
       "profiles": [],
-      "telegram_chat_id": ""
+      "scan_days": 14,
+      "show_location": false,
+      "telegram_chat_id": "",
+      "translate_caption": true
     },
     "roles": {
       "include_caption": true,
       "name": "Rolês",
+      "post_images": false,
+      "post_videos": false,
       "profiles": [
         {
           "keywords": [
@@ -98,19 +114,32 @@
           "username": "tranquilofloripa"
         }
       ],
-      "telegram_chat_id": "-1003905737587"
+      "scan_days": 2,
+      "show_location": false,
+      "telegram_chat_id": "-1003905737587",
+      "translate_caption": false
     },
     "trilhas_rumos": {
       "include_caption": true,
       "name": "Trilhas e Rumos",
+      "post_images": true,
+      "post_videos": true,
       "profiles": [],
-      "telegram_chat_id": ""
+      "scan_days": 30,
+      "show_location": true,
+      "telegram_chat_id": "",
+      "translate_caption": false
     },
     "vereadores_floripa": {
       "include_caption": true,
       "name": "Vereadores Floripa",
       "profiles": [],
-      "telegram_chat_id": "-1003905737587"
+      "telegram_chat_id": "",
+      "post_images": true,
+      "post_videos": true,
+      "translate_caption": false,
+      "show_location": true,
+      "scan_days": 14
     }
   },
   "github_repo_url": "titoconte/center_news",

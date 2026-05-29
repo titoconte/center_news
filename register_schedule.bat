@@ -10,8 +10,8 @@ echo.
 echo [INFO] Certifique-se de executar este script como Administrador.
 echo.
 
-:: Caminho absoluto do atalho de execução do scraper
-set SCRAPER_PATH="c:\Users\titoc\OneDrive\Documentos\instagram_scrapper\run_scraper.bat"
+:: Detecta dinamicamente a pasta atual onde o script está rodando para maior resiliência (ex: se renomear para center_news)
+set SCRAPER_PATH="%~dp0run_scraper.bat"
 
 echo [1/2] Agendando execução para às 10:00...
 schtasks /create /tn "Instagram_Scraper_Daily_10h" /tr %SCRAPER_PATH% /sc daily /st 10:00 /f
