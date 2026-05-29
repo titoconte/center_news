@@ -43,10 +43,26 @@
       "name": "Receitas",
       "post_images": true,
       "post_videos": true,
-      "profiles": [],
-      "scan_days": 14,
+      "profiles": [
+        {
+          "keywords": [
+            "receita",
+            "Receita"
+          ],
+          "username": "chefjoaovieira"
+        },
+        {
+          "keywords": [],
+          "username": "the_pastaqueen"
+        },
+        {
+          "keywords": [],
+          "username": "receitasdepai"
+        }
+      ],
+      "scan_days": 365,
       "show_location": false,
-      "telegram_chat_id": "",
+      "telegram_chat_id": "-1003847277423",
       "translate_caption": true
     },
     "roles": {
@@ -133,13 +149,13 @@
     "vereadores_floripa": {
       "include_caption": true,
       "name": "Vereadores Floripa",
-      "profiles": [],
-      "telegram_chat_id": "",
       "post_images": true,
       "post_videos": true,
-      "translate_caption": false,
+      "profiles": [],
+      "scan_days": 14,
       "show_location": true,
-      "scan_days": 14
+      "telegram_chat_id": "",
+      "translate_caption": false
     }
   },
   "github_repo_url": "titoconte/center_news",
