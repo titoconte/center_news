@@ -1,84 +1,85 @@
 {
-  "telegram_bot_token": "",
-  "github_repo_url": "",
-  "run_git_sync": false,
   "channels": {
-    "roles": {
-      "name": "Rolês",
-      "telegram_chat_id": "",
+    "filmes_series": {
       "include_caption": true,
-      "profiles": [
-        {
-          "username": "floripando",
-          "keywords": ["rolê", "onde ir", "floripa", "sair", "festa"]
-        }
-      ]
+      "name": "Filmes e Séries",
+      "profiles": [],
+      "telegram_chat_id": ""
     },
     "jiujitsu": {
-      "name": "Jiu Jitsu",
-      "telegram_chat_id": "",
       "include_caption": false,
-      "profiles": [
-        {
-          "username": "graciebarra",
-          "keywords": []
-        }
-      ]
-    },
-    "receitas": {
-      "name": "Receitas",
-      "telegram_chat_id": "",
-      "include_caption": true,
-      "profiles": [
-        {
-          "username": "tastemadebr",
-          "keywords": ["receita", "doce", "salgado", "sobremesa", "jantar"]
-        }
-      ]
-    },
-    "filmes_series": {
-      "name": "Filmes e Séries",
-      "telegram_chat_id": "",
-      "include_caption": true,
-      "profiles": [
-        {
-          "username": "netflixbrasil",
-          "keywords": ["série", "filme", "estreia", "dica"]
-        }
-      ]
-    },
-    "trilhas_rumos": {
-      "name": "Trilhas e Rumos",
-      "telegram_chat_id": "",
-      "include_caption": true,
-      "profiles": [
-        {
-          "username": "trilhasemfloripa",
-          "keywords": ["trilha", "viagem", "natureza", "praia", "floripa"]
-        }
-      ]
+      "name": "Jiu Jitsu",
+      "profiles": [],
+      "telegram_chat_id": ""
     },
     "noticias": {
-      "name": "Notícias",
-      "telegram_chat_id": "",
       "include_caption": true,
+      "name": "Notícias",
       "profiles": [
         {
-          "username": "ndmais",
-          "keywords": ["florianópolis", "segurança", "trânsito", "política", "região"]
+          "keywords": [
+            "florianópolis",
+            "segurança",
+            "trânsito",
+            "política",
+            "região"
+          ],
+          "username": "ndmais"
         }
-      ]
+      ],
+      "telegram_chat_id": ""
+    },
+    "receitas": {
+      "include_caption": true,
+      "name": "Receitas",
+      "profiles": [],
+      "telegram_chat_id": ""
+    },
+    "roles": {
+      "include_caption": true,
+      "name": "Rolês",
+      "profiles": [
+        {
+          "keywords": [],
+          "username": "bugiocentro"
+        },
+        {
+          "keywords": [],
+          "username": "bugiotrindade"
+        },
+        {
+          "keywords": [],
+          "username": "bugiolab"
+        },
+        {
+          "keywords": [],
+          "username": "soundsindacity"
+        },
+        {
+          "keywords": [],
+          "username": "poraozim"
+        },
+        {
+          "username": "oaracabotequim",
+          "keywords": []
+        }
+      ],
+      "telegram_chat_id": "-1003905737587"
+    },
+    "trilhas_rumos": {
+      "include_caption": true,
+      "name": "Trilhas e Rumos",
+      "profiles": [],
+      "telegram_chat_id": ""
     },
     "vereadores_floripa": {
-      "name": "Vereadores Floripa",
-      "telegram_chat_id": "",
       "include_caption": true,
-      "profiles": [
-        {
-          "username": "camarafloripa",
-          "keywords": ["vereador", "votação", "projeto", "lei", "florianópolis"]
-        }
-      ]
+      "name": "Vereadores Floripa",
+      "profiles": [],
+      "telegram_chat_id": "-1003905737587"
     }
-  }
+  },
+  "github_repo_url": "titoconte/center_news",
+  "run_git_sync": true,
+  "telegram_bot_token": "8936890138:AAG0fYbapQ5omp-wvPQrJuO5v1gBC_vpv5c"
 }
