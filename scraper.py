@@ -197,6 +197,43 @@ def sync_with_github():
     except Exception as e:
         print(f"[ERRO] Erro inesperado ao sincronizar com o GitHub: {e}")
 
+def fetch_posts_via_api(session, username):
+    """
+    Busca posts recentes de um perfil usando a API nativa do Instagram Web (sem GraphQL).
+    Retorna uma lista de posts simplificados para evitar redirecionamentos e timeouts.
+    """
+    url = f"https://www.instagram.com/api/v1/feed/user/{username}/username/"
+    headers = {
+        'X-IG-App-ID': '936619743392459',
+        'X-Requested-With': 'XMLHttpRequest'
+    }
+    
+    response = session.get(url, headers=headers, timeout=20)
+    
+    if response.status_code == 200:
+        feed_data = response.json()
+        posts = []
+        items = feed_data.get('items', [])
+        
+        for item in items:
+            shortcode = item.get('code')
+            taken_at_timestamp = item.get('taken_at')
+            date_utc = datetime.utcfromtimestamp(taken_at_timestamp)
+            
+            caption_text = ""
+            caption_obj = item.get('caption')
+            if caption_obj:
+                caption_text = caption_obj.get('text', '')
+                
+            posts.append({
+                'shortcode': shortcode,
+                'date_utc': date_utc,
+                'caption': caption_text
+            })
+        return posts
+    else:
+        raise Exception(f"HTTP {response.status_code}: {response.text[:200]}")
+
 def run_scraper():
     """
     Função principal que gerencia o fluxo completo de scraping do Instagram,
@@ -248,44 +285,44 @@ def run_scraper():
             if not username:
                 continue
                 
-            print(f"  [PERFIL] Buscando posts recentes de @{username}...")
+            print(f"  [PERFIL] Buscando posts recentes de @{username} via API nativa do Instagram...")
             try:
-                profile = instaloader.Profile.from_username(L.context, username)
+                # Obtém posts via chamada direta de API Web utilizando a sessão ativa do Firefox
+                posts = fetch_posts_via_api(L.context._session, username)
                 
-                # Itera pelos posts (os mais recentes vêm primeiro)
+                # Itera pelos posts obtidos
                 post_count = 0
-                for post in profile.get_posts():
-                    # Evita varrer posts muito antigos
-                    # Como o robô roda pelo menos uma vez por dia, posts com mais de 2 dias (48h) já foram processados
-                    post_age = datetime.utcnow() - post.date_utc
+                for post in posts:
+                    # Filtra posts muito antigos
+                    post_age = datetime.utcnow() - post['date_utc']
                     if post_age > timedelta(days=2):
                         print(f"    [INFO] Chegou a posts com mais de 48h de idade. Parando busca para @{username}.")
                         break
                         
+                    shortcode = post['shortcode']
                     # 1. Verifica se já processou este post anteriormente
-                    if post.shortcode in processed_set:
+                    if shortcode in processed_set:
                         continue
                         
-                    caption = post.caption or ""
-                    post_url = f"https://www.instagram.com/p/{post.shortcode}/"
+                    caption = post['caption'] or ""
+                    post_url = f"https://www.instagram.com/p/{shortcode}/"
                     
                     # 2. Filtra por palavras-chave se configurado para o perfil
                     if keywords:
                         has_keyword = any(kw.lower() in caption.lower() for kw in keywords)
                         if not has_keyword:
-                            # Ignora post por não conter nenhuma das palavras-chave mapeadas
                             continue
                             
-                    print(f"    [NOVO] Post detectado! Shortcode: {post.shortcode} - Publicado em: {post.date_local}")
+                    # Formata data em string legível
+                    date_str = post['date_utc'].strftime("%Y-%m-%d %H:%M:%S")
+                    print(f"    [NOVO] Post detectado! Shortcode: {shortcode} - Publicado em: {date_str} (UTC)")
                     
                     # 3. Processa a legenda e faz tradução se necessário
                     formatted_caption = ""
                     if include_caption and caption:
-                        # Faz a tradução automática (o deep-translator detecta se for inglês e traduz)
                         print("    [TRADUÇÃO] Analisando legenda para tradução/formatação...")
                         translated_caption = translate_text(caption)
                         
-                        # Se houve tradução de fato (texto mudou), adiciona marcador sutil
                         if translated_caption.strip() != caption.strip():
                             formatted_caption = f"{translated_caption}\n\n<i>(Traduzido do Inglês)</i>"
                         else:
@@ -293,14 +330,12 @@ def run_scraper():
                             
                     # 4. Formata a mensagem para o Telegram
                     if include_caption and formatted_caption:
-                        # Mensagem com legenda
                         message_text = (
                             f"<b>📢 NOVO POST: @{username}</b>\n\n"
                             f"{formatted_caption}\n\n"
                             f"🔗 <a href='{post_url}'>Ver no Instagram</a>"
                         )
                     else:
-                        # Apenas o link do post (ex: canal Jiu Jitsu que não precisa de descrição)
                         message_text = (
                             f"<b>🥋 Jiu Jitsu - Novo Post: @{username}</b>\n\n"
                             f"🔗 {post_url}"
@@ -310,25 +345,21 @@ def run_scraper():
                     success = send_telegram_message(bot_token, chat_id, message_text)
                     
                     if success:
-                        # 6. Registra no banco de dados para evitar re-enviar
+                        # 6. Registra no banco de dados
                         db["processed_posts"].append({
-                            "shortcode": post.shortcode,
+                            "shortcode": shortcode,
                             "processed_at": datetime.now().strftime("%Y-%m-%d"),
                             "channel": channel_key
                         })
-                        processed_set.add(post.shortcode)
+                        processed_set.add(shortcode)
                         new_posts_counter += 1
                         
-                    # Atraso moderado entre envios ao Telegram
                     time.sleep(3)
                     
-                    # Limita a processar no máximo 5 posts novos por perfil por rodada
-                    # para evitar sobrecarga no chat do Telegram de uma só vez
                     post_count += 1
                     if post_count >= 5:
                         break
                         
-                # Adiciona delay de rate limit para não sobrecarregar requisições do Instagram
                 print(f"  [INFO] Concluído @{username}. Aguardando 15 segundos para o próximo perfil...")
                 time.sleep(15)
                 
@@ -338,7 +369,7 @@ def run_scraper():
                     print(f"  [AVISO/BLOQUEIO] O Instagram exigiu verificação de segurança (desafio/login) na sua conta logada.")
                     print(f"  [AÇÃO RECOMENDADA] Abra o seu navegador Firefox (de onde o robô obteve a sessão), entre no Instagram.com e verifique se há alguma tela de 'Atividade Suspeita de Login' ou desafio de SMS/E-mail. Confirme a atividade clicando em 'FUI EU' para liberar os acessos do robô imediatamente!")
                 else:
-                    print(f"  [ERRO] Falha ao processar perfil @{username}: {e}")
+                    print(f"  [ERRO] Falha ao processar perfil @{username} via API: {e}")
                 time.sleep(5)
                 continue
                 
