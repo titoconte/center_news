@@ -40,11 +40,15 @@
       "name": "Rolês",
       "profiles": [
         {
-          "keywords": [],
+          "keywords": [
+            "AGENDA"
+          ],
           "username": "bugiocentro"
         },
         {
-          "keywords": [],
+          "keywords": [
+            "AGENDA"
+          ],
           "username": "bugiotrindade"
         },
         {
@@ -60,12 +64,38 @@
           "username": "poraozim"
         },
         {
-          "keywords": [],
+          "keywords": [
+            "AGENDA"
+          ],
           "username": "oaracabotequim"
         },
         {
-          "username": "grisbaremirante",
-          "keywords": []
+          "keywords": [],
+          "username": "grisbaremirante"
+        },
+        {
+          "keywords": [],
+          "username": "candieiromusicaemeialuz"
+        },
+        {
+          "keywords": [],
+          "username": "salseirodefloripa"
+        },
+        {
+          "keywords": [],
+          "username": "paradoxodefermi.bar"
+        },
+        {
+          "keywords": [],
+          "username": "borogododailha"
+        },
+        {
+          "keywords": [],
+          "username": "volupiapole"
+        },
+        {
+          "keywords": [],
+          "username": "tranquilofloripa"
         }
       ],
       "telegram_chat_id": "-1003905737587"
