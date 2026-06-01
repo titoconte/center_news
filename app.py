@@ -153,4 +153,6 @@ if __name__ == "__main__":
     print("Servidor de Curadoria Instagram Iniciado em http://localhost:5000")
     print("Acesse no seu navegador no PC ou Celular (na mesma rede Wi-Fi)")
     print("=" * 60)
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    # Desativamos o modo debug (debug=False) para evitar que o recarregador automático (watchdog) do Flask
+    # reinicie o servidor de forma fantasma ao ler bibliotecas do Python (comum em instalações Windows Store).
+    app.run(host="0.0.0.0", port=5000, debug=False)

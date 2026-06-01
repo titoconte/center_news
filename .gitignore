@@ -3,3 +3,4 @@ __pycache__/
 .DS_Store
 .idea/
 .vscode/
+deepseek_music_lyrics.py

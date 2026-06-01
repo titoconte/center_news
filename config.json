@@ -125,9 +125,17 @@
         {
           "keywords": [],
           "username": "tranquilofloripa"
+        },
+        {
+          "keywords": [],
+          "username": "gardenfamilyandfriends"
+        },
+        {
+          "keywords": [],
+          "username": "honkfloripa"
         }
       ],
-      "scan_days": 2,
+      "scan_days": 5,
       "show_location": false,
       "telegram_chat_id": "-1003905737587",
       "translate_caption": false
