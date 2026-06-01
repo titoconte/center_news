@@ -57,7 +57,7 @@
           "username": "receitasdepai"
         }
       ],
-      "scan_days": 365,
+      "scan_days": 5,
       "show_location": false,
       "telegram_chat_id": "-1003847277423",
       "translate_caption": true
@@ -70,13 +70,23 @@
       "profiles": [
         {
           "keywords": [
-            "AGENDA"
+            "Segunda",
+            "Terça",
+            "Quarta",
+            "Quinta",
+            "Sexta",
+            "Sábado"
           ],
           "username": "bugiocentro"
         },
         {
           "keywords": [
-            "AGENDA"
+            "Segunda",
+            "Terça",
+            "Quarta",
+            "Quinta",
+            "Sexta",
+            "Sábado"
           ],
           "username": "bugiotrindade"
         },
@@ -94,16 +104,35 @@
         },
         {
           "keywords": [
-            "AGENDA"
+            "Segunda",
+            "Terça",
+            "Quarta",
+            "Quinta",
+            "Sexta",
+            "Sábado"
           ],
           "username": "oaracabotequim"
         },
         {
-          "keywords": [],
+          "keywords": [
+            "Segunda",
+            "Terça",
+            "Quarta",
+            "Quinta",
+            "Sexta",
+            "Sábado"
+          ],
           "username": "grisbaremirante"
         },
         {
-          "keywords": [],
+          "keywords": [
+            "Segunda",
+            "Terça",
+            "Quarta",
+            "Quinta",
+            "Sexta",
+            "Sábado"
+          ],
           "username": "candieiromusicaemeialuz"
         },
         {
@@ -111,11 +140,25 @@
           "username": "salseirodefloripa"
         },
         {
-          "keywords": [],
+          "keywords": [
+            "Segunda",
+            "Terça",
+            "Quarta",
+            "Quinta",
+            "Sexta",
+            "Sábado"
+          ],
           "username": "paradoxodefermi.bar"
         },
         {
-          "keywords": [],
+          "keywords": [
+            "Segunda",
+            "Terça",
+            "Quarta",
+            "Quinta",
+            "Sexta",
+            "Sábado"
+          ],
           "username": "borogododailha"
         },
         {
@@ -135,7 +178,7 @@
           "username": "honkfloripa"
         }
       ],
-      "scan_days": 5,
+      "scan_days": 2,
       "show_location": false,
       "telegram_chat_id": "-1003905737587",
       "translate_caption": false
