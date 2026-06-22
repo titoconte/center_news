@@ -57,7 +57,7 @@
           "username": "receitasdepai"
         }
       ],
-      "scan_days": 5,
+      "scan_days": 30,
       "show_location": false,
       "telegram_chat_id": "-1003847277423",
       "translate_caption": true
@@ -131,7 +131,13 @@
             "Quarta",
             "Quinta",
             "Sexta",
-            "Sábado"
+            "Sábado",
+            "SÁB",
+            "QUA",
+            "SEG",
+            "DOM",
+            "TER",
+            "QUI"
           ],
           "username": "candieiromusicaemeialuz"
         },
@@ -176,6 +182,14 @@
         {
           "keywords": [],
           "username": "honkfloripa"
+        },
+        {
+          "keywords": [],
+          "username": "coffeshopfloripa"
+        },
+        {
+          "keywords": [],
+          "username": "luzinstalacaobar"
         }
       ],
       "scan_days": 2,
