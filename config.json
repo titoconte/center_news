@@ -213,7 +213,24 @@
       "name": "Vereadores Floripa",
       "post_images": true,
       "post_videos": true,
-      "profiles": [],
+      "profiles": [
+        {
+          "keywords": [],
+          "username": "afranioboppre50"
+        },
+        {
+          "keywords": [],
+          "username": "ingridsateremawe"
+        },
+        {
+          "keywords": [],
+          "username": "marquito.sc"
+        },
+        {
+          "username": "adrianinhoflor",
+          "keywords": []
+        }
+      ],
       "scan_days": 14,
       "show_location": true,
       "telegram_chat_id": "",
