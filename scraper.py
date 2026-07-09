@@ -277,10 +277,23 @@ def fetch_posts_via_api(session, username, scan_days=2):
                 taken_at_timestamp = item.get('taken_at')
                 date_utc = datetime.utcfromtimestamp(taken_at_timestamp)
                 
-                # Se o post for anterior à nossa janela de busca (scan_days), interrompe a varredura
+                # Verifica se o post está fixado (pinned) no perfil do usuário.
+                # Posts fixados possuem IDs na lista 'timeline_pinned_user_ids'.
+                is_pinned = False
+                pinned_ids = item.get('timeline_pinned_user_ids')
+                if pinned_ids:
+                    is_pinned = True
+                
+                # Se o post for anterior à nossa janela de busca (scan_days)
                 if date_utc < cutoff_date:
-                    reached_cutoff = True
-                    break
+                    if is_pinned:
+                        # Posts fixados podem ser muito antigos (meses/anos), mas não representam o fim do feed.
+                        # Pulamos eles sem encerrar a varredura dos posts recentes.
+                        continue
+                    else:
+                        # Para posts comuns (não fixados), uma data antiga sinaliza que atingimos o limite recente.
+                        reached_cutoff = True
+                        break
                     
                 caption_text = ""
                 caption_obj = item.get('caption')
