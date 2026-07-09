@@ -190,6 +190,10 @@
         {
           "keywords": [],
           "username": "luzinstalacaobar"
+        },
+        {
+          "username": "arvofestival",
+          "keywords": []
         }
       ],
       "scan_days": 2,
@@ -227,13 +231,29 @@
           "username": "marquito.sc"
         },
         {
-          "username": "adrianinhoflor",
-          "keywords": []
+          "keywords": [],
+          "username": "adrianinhoflor"
+        },
+        {
+          "keywords": [],
+          "username": "vereadorgemada"
+        },
+        {
+          "keywords": [],
+          "username": "vereador.dinho"
+        },
+        {
+          "keywords": [],
+          "username": "professorbruno13"
+        },
+        {
+          "keywords": [],
+          "username": "carla.ayres13"
         }
       ],
       "scan_days": 14,
       "show_location": true,
-      "telegram_chat_id": "",
+      "telegram_chat_id": "-1004476210269",
       "translate_caption": false
     }
   },
