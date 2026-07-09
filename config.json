@@ -16,7 +16,28 @@
       "name": "Jiu Jitsu",
       "post_images": false,
       "post_videos": true,
-      "profiles": [],
+      "profiles": [
+        {
+          "keywords": [],
+          "username": "chokes_and_more"
+        },
+        {
+          "keywords": [],
+          "username": "bianca.yoga.bjj"
+        },
+        {
+          "keywords": [],
+          "username": "serrano_bjj"
+        },
+        {
+          "keywords": [],
+          "username": "joaomiyao"
+        },
+        {
+          "keywords": [],
+          "username": "ricardoaritajj"
+        }
+      ],
       "scan_days": 14,
       "show_location": false,
       "telegram_chat_id": "-1003746625105",
@@ -55,6 +76,10 @@
         {
           "keywords": [],
           "username": "receitasdepai"
+        },
+        {
+          "keywords": [],
+          "username": "cheffelipetorres"
         }
       ],
       "scan_days": 30,
@@ -192,7 +217,11 @@
           "username": "luzinstalacaobar"
         },
         {
-          "username": "arvofestival",
+          "keywords": [],
+          "username": "arvofestival"
+        },
+        {
+          "username": "gafieirafloripa",
           "keywords": []
         }
       ],
