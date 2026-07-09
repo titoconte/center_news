@@ -239,73 +239,108 @@ def sync_with_github():
     except Exception as e:
         print(f"[ERRO] Erro inesperado ao sincronizar com o GitHub: {e}")
 
-def fetch_posts_via_api(session, username):
+def fetch_posts_via_api(session, username, scan_days=2):
     """
-    Busca posts recentes de um perfil usando a API nativa do Instagram Web (sem GraphQL).
+    Busca posts recentes de um perfil usando a API nativa do Instagram Web (sem GraphQL),
+    realizando paginação automática caso o perfil possua mais posts recentes do que cabem
+    na primeira página e ainda estejam dentro do período estipulado em scan_days.
     Retorna uma lista de posts simplificados com metadados de mídias e localização.
     """
-    url = f"https://www.instagram.com/api/v1/feed/user/{username}/username/"
+    posts = []
+    max_id = None
+    cutoff_date = datetime.utcnow() - timedelta(days=scan_days)
+    
     headers = {
         'X-IG-App-ID': '936619743392459',
         'X-Requested-With': 'XMLHttpRequest'
     }
     
-    response = session.get(url, headers=headers, timeout=20)
-    
-    if response.status_code == 200:
-        feed_data = response.json()
-        posts = []
-        items = feed_data.get('items', [])
+    # Loop contínuo de paginação do feed do Instagram
+    while True:
+        url = f"https://www.instagram.com/api/v1/feed/user/{username}/username/"
+        if max_id:
+            url += f"?max_id={max_id}"
+            
+        response = session.get(url, headers=headers, timeout=20)
         
-        for item in items:
-            shortcode = item.get('code')
-            taken_at_timestamp = item.get('taken_at')
-            date_utc = datetime.utcfromtimestamp(taken_at_timestamp)
+        if response.status_code == 200:
+            feed_data = response.json()
+            items = feed_data.get('items', [])
             
-            caption_text = ""
-            caption_obj = item.get('caption')
-            if caption_obj:
-                caption_text = caption_obj.get('text', '')
+            if not items:
+                # Nenhum post retornado nesta página, interrompe
+                break
                 
-            # Extrai fotos e vídeos de forma robusta (suporta imagens, vídeos e carrosséis)
-            photo_url = None
-            video_url = None
-            media_type = item.get('media_type')
-            
-            if media_type == 8: # Carrossel
-                carousel = item.get('carousel_media', [])
-                if carousel:
-                    first = carousel[0]
-                    m_type = first.get('media_type')
-                    if m_type == 1:
-                        photo_url = first.get('image_versions2', {}).get('candidates', [{}])[0].get('url')
-                    elif m_type == 2:
-                        video_url = first.get('video_versions', [{}])[0].get('url')
-                        photo_url = first.get('image_versions2', {}).get('candidates', [{}])[0].get('url')
-            else:
-                if media_type == 1: # Imagem
-                    photo_url = item.get('image_versions2', {}).get('candidates', [{}])[0].get('url')
-                elif media_type == 2: # Vídeo
-                    video_url = item.get('video_versions', [{}])[0].get('url')
-                    photo_url = item.get('image_versions2', {}).get('candidates', [{}])[0].get('url')
-            
-            # Localização
-            location_name = ""
-            location_obj = item.get('location')
-            if location_obj:
-                location_name = location_obj.get('name', '')
+            reached_cutoff = False
+            for item in items:
+                shortcode = item.get('code')
+                taken_at_timestamp = item.get('taken_at')
+                date_utc = datetime.utcfromtimestamp(taken_at_timestamp)
                 
-            posts.append({
-                'shortcode': shortcode,
-                'date_utc': date_utc,
-                'caption': caption_text,
-                'photo_url': photo_url,
-                'video_url': video_url,
-                'location_name': location_name
-            })
-        return posts
-    else:
-        raise Exception(f"HTTP {response.status_code}: {response.text[:200]}")
+                # Se o post for anterior à nossa janela de busca (scan_days), interrompe a varredura
+                if date_utc < cutoff_date:
+                    reached_cutoff = True
+                    break
+                    
+                caption_text = ""
+                caption_obj = item.get('caption')
+                if caption_obj:
+                    caption_text = caption_obj.get('text', '')
+                    
+                # Extrai fotos e vídeos de forma robusta (suporta imagens, vídeos e carrosséis)
+                photo_url = None
+                video_url = None
+                media_type = item.get('media_type')
+                
+                if media_type == 8: # Carrossel
+                    carousel = item.get('carousel_media', [])
+                    if carousel:
+                        first = carousel[0]
+                        m_type = first.get('media_type')
+                        if m_type == 1:
+                            photo_url = first.get('image_versions2', {}).get('candidates', [{}])[0].get('url')
+                        elif m_type == 2:
+                            video_url = first.get('video_versions', [{}])[0].get('url')
+                            photo_url = first.get('image_versions2', {}).get('candidates', [{}])[0].get('url')
+                else:
+                    if media_type == 1: # Imagem
+                        photo_url = item.get('image_versions2', {}).get('candidates', [{}])[0].get('url')
+                    elif media_type == 2: # Vídeo
+                        video_url = item.get('video_versions', [{}])[0].get('url')
+                        photo_url = item.get('image_versions2', {}).get('candidates', [{}])[0].get('url')
+                
+                # Localização
+                location_name = ""
+                location_obj = item.get('location')
+                if location_obj:
+                    location_name = location_obj.get('name', '')
+                    
+                posts.append({
+                    'shortcode': shortcode,
+                    'date_utc': date_utc,
+                    'caption': caption_text,
+                    'photo_url': photo_url,
+                    'video_url': video_url,
+                    'location_name': location_name
+                })
+            
+            # Se encontramos um post anterior à janela ou não houver mais páginas disponíveis
+            if reached_cutoff or not feed_data.get('more_available', False):
+                break
+                
+            # Atualiza o token/id para carregar a próxima página de posts
+            next_max_id = feed_data.get('next_max_id')
+            if not next_max_id:
+                break
+            max_id = next_max_id
+        else:
+            # Se houver erro de paginação no meio do caminho, retorna os posts já coletados em vez de falhar completamente
+            if posts:
+                print(f"    [AVISO] Erro na paginação HTTP {response.status_code} para @{username}. Retornando {len(posts)} posts já coletados.")
+                return posts
+            raise Exception(f"HTTP {response.status_code}: {response.text[:200]}")
+            
+    return posts
 
 def run_scraper():
     """
@@ -367,8 +402,8 @@ def run_scraper():
                 
             print(f"  [PERFIL] Buscando posts recentes de @{username} via API nativa do Instagram...")
             try:
-                # Obtém posts via chamada direta de API Web utilizando a sessão ativa do Firefox
-                posts = fetch_posts_via_api(L.context._session, username)
+                # Obtém posts via chamada direta de API Web utilizando a sessão ativa do Firefox e limitando com scan_days
+                posts = fetch_posts_via_api(L.context._session, username, scan_days=scan_days)
                 
                 # Itera pelos posts obtidos
                 post_count = 0
