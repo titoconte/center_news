@@ -11,14 +11,15 @@ echo [INFO] Certifique-se de executar este script como Administrador.
 echo.
 
 :: Detecta dinamicamente a pasta atual onde o script está rodando para maior resiliência (ex: se renomear para center_news)
-set SCRAPER_PATH="%~dp0run_scraper.bat"
+:: Usamos aspas escapadas para permitir que o comando execute corretamente no Windows com o argumento --no-pause
+set TASK_COMMAND="\"%~dp0run_scraper.bat\" --no-pause"
 
 echo [1/2] Agendando execução para às 10:00...
-schtasks /create /tn "Instagram_Scraper_Daily_10h" /tr %SCRAPER_PATH% /sc daily /st 10:00 /f
+schtasks /create /tn "Instagram_Scraper_Daily_10h" /tr %TASK_COMMAND% /sc daily /st 10:00 /f
 
 echo.
 echo [2/2] Agendando execução para às 17:00...
-schtasks /create /tn "Instagram_Scraper_Daily_17h" /tr %SCRAPER_PATH% /sc daily /st 17:00 /f
+schtasks /create /tn "Instagram_Scraper_Daily_17h" /tr %TASK_COMMAND% /sc daily /st 17:00 /f
 
 echo.
 echo ============================================================
