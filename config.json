@@ -52,6 +52,14 @@
         {
           "keywords": [],
           "username": "ndmais"
+        },
+        {
+          "keywords": [],
+          "username": "amandamiranda_jornalista"
+        },
+        {
+          "keywords": [],
+          "username": "prefflorianopolis"
         }
       ],
       "scan_days": 2,
@@ -82,7 +90,7 @@
           "username": "cheffelipetorres"
         }
       ],
-      "scan_days": 30,
+      "scan_days": 10,
       "show_location": false,
       "telegram_chat_id": "-1003847277423",
       "translate_caption": true
@@ -221,8 +229,12 @@
           "username": "arvofestival"
         },
         {
-          "username": "gafieirafloripa",
-          "keywords": []
+          "keywords": [],
+          "username": "gafieirafloripa"
+        },
+        {
+          "keywords": [],
+          "username": "buenaondanacidade"
         }
       ],
       "scan_days": 2,
