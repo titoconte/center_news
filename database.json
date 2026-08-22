@@ -1,126 +1,6 @@
 {
   "processed_posts": [
     {
-      "shortcode": "DbInXMuuCGn",
-      "processed_at": "2026-07-23",
-      "channel": "jiujitsu"
-    },
-    {
-      "shortcode": "DbHHntAJYG0",
-      "processed_at": "2026-07-23",
-      "channel": "roles"
-    },
-    {
-      "shortcode": "Da_Xsrwx2Cl",
-      "processed_at": "2026-07-23",
-      "channel": "roles"
-    },
-    {
-      "shortcode": "DbIo0X6xVhx",
-      "processed_at": "2026-07-23",
-      "channel": "vereadores_floripa"
-    },
-    {
-      "shortcode": "DbIgzQxR_qo",
-      "processed_at": "2026-07-23",
-      "channel": "vereadores_floripa"
-    },
-    {
-      "shortcode": "DbG7z1nPqvt",
-      "processed_at": "2026-07-23",
-      "channel": "vereadores_floripa"
-    },
-    {
-      "shortcode": "DbHVH86OwJY",
-      "processed_at": "2026-07-23",
-      "channel": "vereadores_floripa"
-    },
-    {
-      "shortcode": "DbHGoHSPHzR",
-      "processed_at": "2026-07-23",
-      "channel": "vereadores_floripa"
-    },
-    {
-      "shortcode": "DbEWiQhheok",
-      "processed_at": "2026-07-23",
-      "channel": "vereadores_floripa"
-    },
-    {
-      "shortcode": "DbEQiwgu_n5",
-      "processed_at": "2026-07-23",
-      "channel": "vereadores_floripa"
-    },
-    {
-      "shortcode": "DbHKSrvJQB_",
-      "processed_at": "2026-07-23",
-      "channel": "vereadores_floripa"
-    },
-    {
-      "shortcode": "DbI-oz9tqvI",
-      "processed_at": "2026-07-23",
-      "channel": "jiujitsu"
-    },
-    {
-      "shortcode": "DbJE8TJM3ZT",
-      "processed_at": "2026-07-23",
-      "channel": "jiujitsu"
-    },
-    {
-      "shortcode": "DbI6-kNyYOf",
-      "processed_at": "2026-07-23",
-      "channel": "jiujitsu"
-    },
-    {
-      "shortcode": "DbIvgLRBdAq",
-      "processed_at": "2026-07-23",
-      "channel": "jiujitsu"
-    },
-    {
-      "shortcode": "DbJQixbRm8G",
-      "processed_at": "2026-07-23",
-      "channel": "receitas"
-    },
-    {
-      "shortcode": "DbI73m3liyw",
-      "processed_at": "2026-07-23",
-      "channel": "receitas"
-    },
-    {
-      "shortcode": "DbI2AGRAkQL",
-      "processed_at": "2026-07-23",
-      "channel": "roles"
-    },
-    {
-      "shortcode": "DbI7IymxBHY",
-      "processed_at": "2026-07-23",
-      "channel": "roles"
-    },
-    {
-      "shortcode": "DbI1JCPhJdU",
-      "processed_at": "2026-07-23",
-      "channel": "roles"
-    },
-    {
-      "shortcode": "DbI843VM04u",
-      "processed_at": "2026-07-23",
-      "channel": "roles"
-    },
-    {
-      "shortcode": "DbI-_2ZOJ04",
-      "processed_at": "2026-07-23",
-      "channel": "vereadores_floripa"
-    },
-    {
-      "shortcode": "DbJKWoRO-s5",
-      "processed_at": "2026-07-23",
-      "channel": "vereadores_floripa"
-    },
-    {
-      "shortcode": "DbJJ9svkSxf",
-      "processed_at": "2026-07-23",
-      "channel": "vereadores_floripa"
-    },
-    {
       "shortcode": "DbLMOJVhJyH",
       "processed_at": "2026-07-24",
       "channel": "jiujitsu"
@@ -3598,6 +3478,76 @@
     {
       "shortcode": "DcTi47pEXCj",
       "processed_at": "2026-08-21",
+      "channel": "vereadores_floripa"
+    },
+    {
+      "shortcode": "DcU_DHmwcFN",
+      "processed_at": "2026-08-22",
+      "channel": "jiujitsu"
+    },
+    {
+      "shortcode": "DcU8nWOtlIo",
+      "processed_at": "2026-08-22",
+      "channel": "jiujitsu"
+    },
+    {
+      "shortcode": "DcURHkhJ5jq",
+      "processed_at": "2026-08-22",
+      "channel": "jiujitsu"
+    },
+    {
+      "shortcode": "DcV3NMZOzVK",
+      "processed_at": "2026-08-22",
+      "channel": "jiujitsu"
+    },
+    {
+      "shortcode": "DcUPFL0BQE9",
+      "processed_at": "2026-08-22",
+      "channel": "receitas"
+    },
+    {
+      "shortcode": "DcUbWoAO9J0",
+      "processed_at": "2026-08-22",
+      "channel": "roles"
+    },
+    {
+      "shortcode": "DcCujHWtfQe",
+      "processed_at": "2026-08-22",
+      "channel": "roles"
+    },
+    {
+      "shortcode": "DcUQSKlRG4x",
+      "processed_at": "2026-08-22",
+      "channel": "roles"
+    },
+    {
+      "shortcode": "DcUfG4MuwNz",
+      "processed_at": "2026-08-22",
+      "channel": "vereadores_floripa"
+    },
+    {
+      "shortcode": "DcUaragt-me",
+      "processed_at": "2026-08-22",
+      "channel": "vereadores_floripa"
+    },
+    {
+      "shortcode": "DcUjQ9Xqr8s",
+      "processed_at": "2026-08-22",
+      "channel": "vereadores_floripa"
+    },
+    {
+      "shortcode": "DcUK0a8s2GU",
+      "processed_at": "2026-08-22",
+      "channel": "vereadores_floripa"
+    },
+    {
+      "shortcode": "DcU3LSus5MD",
+      "processed_at": "2026-08-22",
+      "channel": "vereadores_floripa"
+    },
+    {
+      "shortcode": "DcUflV-JaCq",
+      "processed_at": "2026-08-22",
       "channel": "vereadores_floripa"
     }
   ]
